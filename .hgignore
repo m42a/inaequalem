@@ -2,3 +2,6 @@ syntax: glob
 # Ignore vim's temporary backup files
 *~
 *.d
+*.o
+inaequalem
+inaequalem.exe

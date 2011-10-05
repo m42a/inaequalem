@@ -7,15 +7,14 @@ DEPENDS=$(OBJECTS:%.o=%.d)
 
 .PHONY: clean
 
-nottouhou: $(OBJECTS)
-	$(CPP) $(CPPFLAGS) $(OBJECTS) -o nottouhou $(GLFLAGS)
+inaequalem: $(OBJECTS)
+	$(CPP) $(CPPFLAGS) $(OBJECTS) -o inaequalem $(GLFLAGS)
 
 -include $(DEPENDS)
 
 $(OBJECTS): %.o: %.cpp
 	$(CPP) -MMD -MP -c $(CPPFLAGS) $< $(GLFLAGS)
-#$(CPP) -MMD -MP $(CPPFLAGS)
 
 clean:
-	rm -f $(OBJECTS) $(DEPENDS) nottouhou *~
+	rm -f $(OBJECTS) $(DEPENDS) inaequalem *~
 
