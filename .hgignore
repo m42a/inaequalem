@@ -1,3 +1,4 @@
 syntax: glob
 # Ignore vim's temporary backup files
 *~
+*.d
