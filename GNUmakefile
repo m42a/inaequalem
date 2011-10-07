@@ -2,7 +2,7 @@ GLFLAGS=-isystem /usr/include/w32api -lopengl32 -lglu32 -lglut32 -L/usr/lib/w32a
 CPPFLAGS=-Wall -Wextra -O2 -std=gnu++0x
 CPP=g++
 
-OBJECTS=touhou.o enemy.o bullet.o
+OBJECTS=touhou.o enemy.o bullet.o player.o
 DEPENDS=$(OBJECTS:%.o=%.d)
 
 .PHONY: clean
