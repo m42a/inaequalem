@@ -1,4 +1,5 @@
 #include <iostream>
+#include <array>
 
 #include "inaequalem.h"
 #include "bullet.h"
@@ -7,8 +8,9 @@
 
 using namespace std;
 
-int ticker;
+const float ratio=640.0/480.0; //The desired width/height ratio
 
+int ticker=0;
 player p(.5, .5);
 
 void render()
@@ -16,6 +18,8 @@ void render()
 	glClear(GL_COLOR_BUFFER_BIT);
 	glColor3f(0.0, 0.0, 0.0);
 	glRectf(0,0,1,1);
+	glColor3f(0.2, 0.2, 0.2);
+	glRectf(1,0,ratio,1);
 	p.draw();
 	glutSwapBuffers();
 }
@@ -24,12 +28,11 @@ void resize(int w, int h)
 {
 	if (w==0 || h==0)
 		return;
-	const float ratio=640.0/480.0; //The desired width/height ratio
-	/*if (ratio*h>w)
+	if (ratio*h>w)
 		glViewport(0, (h-w/ratio)/2, w, w/ratio);
 	else
-		glViewport((w-h*ratio)/2, 0, h*ratio, h);*/
-	glViewport(0,0,w,h);
+		glViewport((w-h*ratio)/2, 0, h*ratio, h);
+	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
 	gluOrtho2D(0,ratio,0,1);
 }
@@ -70,7 +73,7 @@ int main(int argc, char *argv[])
 	glutInitWindowSize(640, 480);
 	glutCreateWindow("Not touhou");
 
-	glClearColor(1,0,1,0);
+	glClearColor(1,1,1,0);
 
 	glutDisplayFunc(render);
 	glutReshapeFunc(resize);
