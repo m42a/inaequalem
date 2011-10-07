@@ -1,5 +1,6 @@
 #include <iostream>
 #include <array>
+#include <algorithm>
 
 #include "inaequalem.h"
 #include "bullet.h"
@@ -9,17 +10,37 @@
 using namespace std;
 
 const float ratio=640.0/480.0; //The desired width/height ratio
+const float textheight=119.05; //From the documentation
+const float textlineheight=119.05+33.33; //From the documentation
 
 int ticker=0;
 player p(.5, .5);
 
+void writetext(float x, float y, float height, const string &s)
+{
+	glPushMatrix();
+	glTranslatef(x, y, 0);
+	glScalef(height/textheight, height/textheight, height/textheight);
+	for_each(s.cbegin(), s.cend(), [](char c){glutStrokeCharacter(GLUT_STROKE_ROMAN, c);});
+	glPopMatrix();
+}
+
+void drawBackground()
+{
+	glColor3f(0.0, 0.0, 0.0);
+	glRectf(0,0,1,1);
+}
+
+void drawSidepanel()
+{
+	glColor3f(0.2, 0.2, 0.2);
+	glRectf(1,0,ratio,1);
+	writetext(1.1, .9, .02, "Score");
+}
+
 void render()
 {
 	glClear(GL_COLOR_BUFFER_BIT);
-	glColor3f(0.0, 0.0, 0.0);
-	glRectf(0,0,1,1);
-	glColor3f(0.2, 0.2, 0.2);
-	glRectf(1,0,ratio,1);
 	p.draw();
 	glutSwapBuffers();
 }
