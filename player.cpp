@@ -11,3 +11,11 @@ void player::draw() const
 	glVertex2f(x-SQRT_3/20, y-.05);
 	glEnd();
 }
+
+void player::move(float angle)
+{
+	x+=speed*cos(angle);
+	y+=speed*sin(angle);
+	x=bound(x,0.0f,1.0f);
+	y=bound(y,0.0f,1.0f);
+}
