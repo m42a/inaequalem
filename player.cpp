@@ -14,8 +14,12 @@ void player::draw() const
 
 void player::move(float angle)
 {
-	x+=speed*cos(angle);
-	y+=speed*sin(angle);
-	x=bound(x,0.0f,1.0f);
-	y=bound(y,0.0f,1.0f);
+	x=bound(x+speed*cos(angle),0.0f,1.0f);
+	y=bound(y+speed*sin(angle),0.0f,1.0f);
+}
+
+void player::moveto(float xx, float yy)
+{
+	x=bound(xx,0.0f,1.0f);
+	y=bound(yy,0.0f,1.0f);
 }

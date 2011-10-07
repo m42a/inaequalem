@@ -12,6 +12,7 @@ public:
 	void draw() const;
 
 	void move(float angle);
+	void moveto(float, float);
 
 	static const float right=0.0f;
 	static const float up=M_PI/2;
