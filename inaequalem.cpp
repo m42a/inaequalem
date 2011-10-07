@@ -13,14 +13,17 @@ const float ratio=640.0/480.0; //The desired width/height ratio
 const float textheight=119.05; //From the documentation
 const float textlineheight=119.05+33.33; //From the documentation
 
+//static bool directions[4]={false,false,false,false}; //Up down left right
+int direction=0;
+
 int ticker=0;
 player p(.5, .5);
 
-void writetext(float x, float y, float height, const string &s)
+void writetext(float x, float y, float size, const string &s)
 {
 	glPushMatrix();
 	glTranslatef(x, y, 0);
-	glScalef(height/textheight, height/textheight, height/textheight);
+	glScalef(size/textheight, size/textheight, size/textheight);
 	for_each(s.cbegin(), s.cend(), [](char c){glutStrokeCharacter(GLUT_STROKE_ROMAN, c);});
 	glPopMatrix();
 }
@@ -35,13 +38,16 @@ void drawSidepanel()
 {
 	glColor3f(0.2, 0.2, 0.2);
 	glRectf(1,0,ratio,1);
-	writetext(1.1, .9, .02, "Score");
+	glColor3f(1.0, 1.0, 1.0);
+	writetext(1.1, .9, .05, "Score");
 }
 
 void render()
 {
 	glClear(GL_COLOR_BUFFER_BIT);
+	drawBackground();
 	p.draw();
+	drawSidepanel();
 	glutSwapBuffers();
 }
 
@@ -61,6 +67,26 @@ void resize(int w, int h)
 
 void gamelogic(int v)
 {
+	glutTimerFunc(16, gamelogic, 0);
+	//cout << "logic\n";
+	if (direction==-1)
+		p.move(player::right);
+	else if (direction==2)
+		p.move(player::upright);
+	else if (direction==3)
+		p.move(player::up);
+	else if (direction==4)
+		p.move(player::upleft);
+	else if (direction==1)
+		p.move(player::left);
+	else if (direction==-2)
+		p.move(player::downleft);
+	else if (direction==-3)
+		p.move(player::down);
+	else if (direction==-4)
+		p.move(player::downright);
+	++ticker;
+	glutPostRedisplay();
 }
 
 void keydown(unsigned char key, int x, int y)
@@ -73,15 +99,27 @@ void keyup(unsigned char key, int x, int y)
 
 void specialdown(int key, int x, int y)
 {
-	if (key==GLUT_KEY_DOWN)
-		p.move(player::down);
 	if (key==GLUT_KEY_UP)
-		p.move(player::up);
-	glutPostRedisplay();
+		direction+=3;
+	else if (key==GLUT_KEY_DOWN)
+		direction-=3;
+	else if (key==GLUT_KEY_LEFT)
+		direction+=1;
+	else if (key==GLUT_KEY_RIGHT)
+		direction-=1;
+	//direction=3*(directions[0]-directions[1])+directions[2]-directions[3];
 }
 
 void specialup(int key, int x, int y)
 {
+	if (key==GLUT_KEY_UP)
+		direction-=3;
+	else if (key==GLUT_KEY_DOWN)
+		direction+=3;
+	else if (key==GLUT_KEY_LEFT)
+		direction-=1;
+	else if (key==GLUT_KEY_RIGHT)
+		direction+=1;
 }
 
 void mousemove(int x, int y)

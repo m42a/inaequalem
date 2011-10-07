@@ -6,9 +6,9 @@ void player::draw() const
 {
 	glColor3f(1,1,1);
 	glBegin(GL_POLYGON);
-	glVertex2f(x, y+.1);
-	glVertex2f(x+SQRT_3/20, y-.05);
-	glVertex2f(x-SQRT_3/20, y-.05);
+	glVertex3f(x, y+.05, 0);
+	glVertex3f(x+SQRT_3/40, y-.025, 0);
+	glVertex3f(x-SQRT_3/40, y-.025, 0);
 	glEnd();
 }
 
