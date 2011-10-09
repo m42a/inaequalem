@@ -1,5 +1,5 @@
 #include <iostream>
-#include <array>
+#include <vector>
 #include <algorithm>
 #include <ctime>
 
@@ -14,14 +14,15 @@ const float ratio=640.0/480.0; //The desired width/height ratio
 const float textheight=119.05; //From the documentation
 const float textlineheight=119.05+33.33; //From the documentation
 
-//static bool directions[4]={false,false,false,false}; //Up down left right
-int direction=0;
+int movedir=0;
+bool shooting;
 
 struct timespec then;
 int ticker=0;
 string fps;
 
 player p(.5, .5);
+vector<bullet> pb;
 
 void writetext(float x, float y, float size, const string &s)
 {
@@ -43,7 +44,10 @@ void drawSidepanel()
 	glColor3f(0.2, 0.2, 0.2);
 	glRectf(1,0,ratio,1);
 	glColor3f(1.0, 1.0, 1.0);
-	writetext(1.02, .9, .05, "Score: &e0");
+	writetext(1.02, .9, .04, "Score: &e0");
+	writetext(1.02, .5, .02, strprintf("pb.size()=%d",pb.size()));
+	if (pb.size()!=0)
+		writetext(1.02, .5-.03*textlineheight/textheight, .02, strprintf("pb[0].y=%f",pb[0].y));
 	writetext(1.02, .02, .03, fps);
 }
 
@@ -52,6 +56,7 @@ void render()
 	glClear(GL_COLOR_BUFFER_BIT);
 	drawBackground();
 	p.draw();
+	for_each(pb.cbegin(), pb.cend(), mem_fun_ref(&bullet::draw));
 	drawSidepanel();
 	glutSwapBuffers();
 }
@@ -70,27 +75,38 @@ void resize(int w, int h)
 	glMatrixMode(GL_MODELVIEW);
 }
 
+template<class T>
+void stepandcull(vector<T> &v)
+{
+	for_each(v.begin(), v.end(), mem_fun_ref(&T::step));
+	auto i=remove_if(v.begin(), v.end(), mem_fun_ref(&T::isdestroyed));
+	v.erase(i, v.end());
+}
+
 void gamelogic(int v)
 {
 	glutTimerFunc(16, gamelogic, 0);
 	//cout << "logic\n";
-	if (direction==-1)
-		p.move(player::right);
-	else if (direction==2)
-		p.move(player::upright);
-	else if (direction==3)
-		p.move(player::up);
-	else if (direction==4)
-		p.move(player::upleft);
-	else if (direction==1)
-		p.move(player::left);
-	else if (direction==-2)
-		p.move(player::downleft);
-	else if (direction==-3)
-		p.move(player::down);
-	else if (direction==-4)
-		p.move(player::downright);
+	if (movedir==-1)
+		p.move(direction::right);
+	else if (movedir==2)
+		p.move(direction::upright);
+	else if (movedir==3)
+		p.move(direction::up);
+	else if (movedir==4)
+		p.move(direction::upleft);
+	else if (movedir==1)
+		p.move(direction::left);
+	else if (movedir==-2)
+		p.move(direction::downleft);
+	else if (movedir==-3)
+		p.move(direction::down);
+	else if (movedir==-4)
+		p.move(direction::downright);
+	stepandcull(pb);
 	++ticker;
+	if (ticker%4==0 && shooting)
+		pb.emplace_back(p.x, p.y, 0, direction::up, .02);
 	if (ticker%32==0)
 	{
 		struct timespec now;
@@ -109,34 +125,38 @@ void gamelogic(int v)
 
 void keydown(unsigned char key, int x, int y)
 {
+	if (key=='z')
+		shooting=true;
 }
 
 void keyup(unsigned char key, int x, int y)
 {
+	if (key=='z')
+		shooting=false;
 }
 
 void specialdown(int key, int x, int y)
 {
 	if (key==GLUT_KEY_UP)
-		direction+=3;
+		movedir+=3;
 	else if (key==GLUT_KEY_DOWN)
-		direction-=3;
+		movedir-=3;
 	else if (key==GLUT_KEY_LEFT)
-		direction+=1;
+		movedir+=1;
 	else if (key==GLUT_KEY_RIGHT)
-		direction-=1;
+		movedir-=1;
 }
 
 void specialup(int key, int x, int y)
 {
 	if (key==GLUT_KEY_UP)
-		direction-=3;
+		movedir-=3;
 	else if (key==GLUT_KEY_DOWN)
-		direction+=3;
+		movedir+=3;
 	else if (key==GLUT_KEY_LEFT)
-		direction-=1;
+		movedir-=1;
 	else if (key==GLUT_KEY_RIGHT)
-		direction+=1;
+		movedir+=1;
 }
 
 void mousemove(int x, int y)

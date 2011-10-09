@@ -3,6 +3,7 @@
 
 #include <algorithm>
 #include <initializer_list>
+#include <string>
 #include <cmath>
 #include "vertex.h"
 
@@ -11,6 +12,31 @@
 #else
 #  include <GL/glut.h>
 #endif
+
+//constants
+const float M_2PI=2*M_PI;
+
+namespace direction
+{
+	const float right=0*M_2PI/8;
+	const float upright=1*M_2PI/8;
+	const float up=2*M_2PI/8;
+	const float upleft=3*M_2PI/8;
+	const float left=4*M_2PI/8;
+	const float downleft=5*M_2PI/8;
+	const float down=6*M_2PI/8;
+	const float downright=7*M_2PI/8;
+};
+
+template <class... args>
+std::string strprintf(const std::string &format, args... a)
+{
+		int size=snprintf(NULL, 0, format.c_str(), a...);
+		//Screw it, this code only works with gcc anyway
+		char s[size+1];
+		sprintf(s, format.c_str(), a...);
+		return s;
+}
 
 template <class T>
 inline T bound(const T &v, const T &l, const T &r)
