@@ -43,7 +43,7 @@ void drawSidepanel()
 	glColor3f(0.2, 0.2, 0.2);
 	glRectf(1,0,ratio,1);
 	glColor3f(1.0, 1.0, 1.0);
-	writetext(1.02, .9, .05, "Score");
+	writetext(1.02, .9, .05, "Score: &e0");
 	writetext(1.02, .02, .03, fps);
 }
 

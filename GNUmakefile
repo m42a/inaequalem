@@ -1,5 +1,5 @@
 GLFLAGS=-isystem /usr/include/w32api -lopengl32 -lglu32 -lglut32 -L/usr/lib/w32api/
-CPPFLAGS=-Wall -Wextra -O2 -std=gnu++0x
+CPPFLAGS=-Wall -Wextra -Weffc++ -O2 -std=gnu++0x
 CPP=g++
 
 OBJECTS=inaequalem.o enemy.o bullet.o player.o
