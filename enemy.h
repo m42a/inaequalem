@@ -16,7 +16,7 @@ public:
 	void destroy() {counter=-1;}
 	bool isdestroyed() {return counter==-1;}
 	void damage(float d);
-private:
+
 	int counter;
 	int type; //What sprite the enemy has
 	int ai; //How the enemy moves
@@ -25,7 +25,5 @@ private:
 
 	float x, y;
 };
-
-inline void step(enemy &e) {e.step();}
 
 #endif

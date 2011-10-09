@@ -14,7 +14,6 @@ public:
 	void move(float angle);
 	void moveto(float, float);
 
-//private:
 	float x, y;
 	float speed;
 };
