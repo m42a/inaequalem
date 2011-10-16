@@ -14,18 +14,18 @@
 #endif
 
 //constants
-const float M_2PI=2*M_PI;
+const float M_TAU=2*M_PI;
 
 namespace direction
 {
-	const float right=0*M_2PI/8;
-	const float upright=1*M_2PI/8;
-	const float up=2*M_2PI/8;
-	const float upleft=3*M_2PI/8;
-	const float left=4*M_2PI/8;
-	const float downleft=5*M_2PI/8;
-	const float down=6*M_2PI/8;
-	const float downright=7*M_2PI/8;
+	const float right=0*M_TAU/8;
+	const float upright=1*M_TAU/8;
+	const float up=2*M_TAU/8;
+	const float upleft=3*M_TAU/8;
+	const float left=4*M_TAU/8;
+	const float downleft=5*M_TAU/8;
+	const float down=6*M_TAU/8;
+	const float downright=7*M_TAU/8;
 };
 
 template <class... args>
@@ -63,16 +63,37 @@ void drawaapolygoniter(T b, T e)
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 }
 
-//This is a hack to make the first hack work with initializer_lists, since they can't be deduced from templates
+//This is a hack to make the first hack work with initializer_lists, since they can't be deduced from templates (and don't use cbegin or cend)
 inline void drawaapolygon(std::initializer_list<vertex> il)
 {
 	drawaapolygoniter(il.begin(), il.end());
 }
 
 template <class T>
-inline void drawaapolygon(T t)
+inline void drawaapolygon(const T &t)
 {
 	drawaapolygoniter(t.cbegin(), t.cend());
+}
+
+template <class T>
+void drawpolygoniter(T b, T e)
+{
+	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+	glBegin(GL_POLYGON);
+	std::for_each(b, e, glVertex3fv);
+	glEnd();
+}
+
+//This is a hack to make the first hack work with initializer_lists, since they can't be deduced from templates (and don't use cbegin or cend)
+inline void drawpolygon(std::initializer_list<vertex> il)
+{
+	drawpolygoniter(il.begin(), il.end());
+}
+
+template <class T>
+inline void drawpolygon(const T &t)
+{
+	drawpolygoniter(t.cbegin(), t.cend());
 }
 
 #endif
