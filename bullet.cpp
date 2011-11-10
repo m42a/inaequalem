@@ -18,6 +18,8 @@ void bullet::step()
 		destroy();
 }
 
+//This should be abstracted into a "type" class, instead of every bullet being
+//a cyan pentagon
 void bullet::draw() const
 {
 	glColor3f(0,1,1);

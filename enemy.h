@@ -17,6 +17,8 @@ public:
 	bool isdestroyed() {return counter==-1;}
 	void damage(float d);
 
+	void draw() const;
+
 	int counter;
 	int type; //What sprite the enemy has
 	int ai; //How the enemy moves

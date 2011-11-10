@@ -19,22 +19,32 @@ bool shooting;
 
 struct timespec then;
 int ticker=0;
-string fps;
+string fps; //This is the string to display as an FPS counter, do not rely on it being parsable
 
+//This is us and our bullets
 player p(.5, .5);
 vector<bullet> pb;
+//These are the enemies and their bullets
+vector<enemy> e;
+vector<bullet> eb;
 
+//Write a string somewhere at a certain size.  Text defaults to the window
+//height, so try making the size somewhat small.  Text scales vertically and
+//horizontally by the same factor; I doubt there's a need to have squished or
+//elongated text.
 void writetext(float x, float y, float size, const string &s)
 {
 	glPushMatrix();
 	glTranslatef(x, y, 0);
 	glScalef(size/textheight, size/textheight, size/textheight);
+	//Sadly, C++ lacks currying, so we'll have to make do with a lambda (or bind, but I don't wanna)
 	for_each(s.cbegin(), s.cend(), [](char c){glutStrokeCharacter(GLUT_STROKE_ROMAN, c);});
 	glPopMatrix();
 }
 
 void drawBackground()
 {
+	//Do something cool with stars
 	glColor3f(0.0, 0.0, 0.0);
 	glRectf(0,0,1,1);
 }
@@ -42,12 +52,17 @@ void drawBackground()
 void drawSidepanel()
 {
 	glColor3f(0.2, 0.2, 0.2);
+	//Dark gray background
 	glRectf(1,0,ratio,1);
 	glColor3f(1.0, 1.0, 1.0);
+	//Text in white
 	writetext(1.02, .9, .04, "Score: &e0");
+	//Debugging output, remove in release
 	writetext(1.02, .5, .02, strprintf("pb.size()=%d",pb.size()));
+	//Debugging output, remove in release
 	if (pb.size()!=0)
 		writetext(1.02, .5-.03*textlineheight/textheight, .02, strprintf("pb[0].y=%f",pb[0].y));
+	//Debugging output, but everyone loves FPS counters, so it'll probably stay
 	writetext(1.02, .02, .03, fps);
 }
 
@@ -56,7 +71,10 @@ void render()
 	glClear(GL_COLOR_BUFFER_BIT);
 	drawBackground();
 	p.draw();
+	for_each(e.cbegin(), e.cend(), mem_fun_ref(&enemy::draw));
 	for_each(pb.cbegin(), pb.cend(), mem_fun_ref(&bullet::draw));
+	for_each(eb.cbegin(), eb.cend(), mem_fun_ref(&bullet::draw));
+	//Draw the side panel over everything else, since we don't do scissoring
 	drawSidepanel();
 	glutSwapBuffers();
 }
@@ -65,12 +83,14 @@ void resize(int w, int h)
 {
 	if (w==0 || h==0)
 		return;
+	//Ensure the relative dimensions of the playing area are unstretched
 	if (ratio*h>w)
 		glViewport(0, (h-w/ratio)/2, w, w/ratio);
 	else
 		glViewport((w-h*ratio)/2, 0, h*ratio, h);
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
+	//Change this when we have 3D
 	gluOrtho2D(0,ratio,0,1);
 	glMatrixMode(GL_MODELVIEW);
 }
@@ -85,8 +105,10 @@ void stepandcull(vector<T> &v)
 
 void gamelogic(int v)
 {
+	//Reset the timer at the beginning of the function so we minimize lag
+	//if the game logic takes a while
 	glutTimerFunc(16, gamelogic, 0);
-	//cout << "logic\n";
+	//There's got to be a better way to do this
 	if (movedir==-1)
 		p.move(direction::right);
 	else if (movedir==2)
@@ -103,26 +125,37 @@ void gamelogic(int v)
 		p.move(direction::down);
 	else if (movedir==-4)
 		p.move(direction::downright);
+	//Move the player's bullets
 	stepandcull(pb);
+	//Don't move the enemies or their bullets, since there's no collision detection
 	++ticker;
+	//Shoot every 4th tick
 	if (ticker%4==0 && shooting)
 		pb.emplace_back(p.x, p.y, 0, direction::up, .02);
+	//This tracks ticks, not displayed frames (but it'll always be the
+	//correct unless we take more than 16 milliseconds for a tick)
 	if (ticker%32==0)
 	{
 		struct timespec now;
 		clock_gettime(CLOCK_MONOTONIC, &now);
 		double diff=(now.tv_sec-then.tv_sec)+(now.tv_nsec-then.tv_nsec)/1000000000.0;
 		double frames=32/diff;
+		//This should really be a variadic template function
+		//This is a function, there's no reason not to just call strprintf
 		int size=snprintf(NULL, 0, "FPS: %05.2f", frames);
 		char *s=new char[size+1];
 		sprintf(s, "FPS: %05.2f", frames);
 		fps=s;
 		delete[] s;
-		then=now;
+		then=now; //This happens soon
 	}
 	glutPostRedisplay();
 }
 
+//For the keyboard functions, we're relying on all keys starting in the up
+//state and never going above the up state or below the down state.  I
+//guarantee this will happen at least once in testing, even though it's
+//logically impossible.
 void keydown(unsigned char key, int x, int y)
 {
 	if (key=='z')
@@ -159,6 +192,7 @@ void specialup(int key, int x, int y)
 		movedir+=1;
 }
 
+//I have a feeling we might not need this, but it's registered just in case
 void mousemove(int x, int y)
 {
 }
@@ -168,8 +202,9 @@ int main(int argc, char *argv[])
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA);
 	glutInitWindowSize(640, 480);
-	glutCreateWindow("Not touhou");
+	glutCreateWindow("Inaequalem");
 
+	//Something something POSIX
 	clock_gettime(CLOCK_MONOTONIC, &then);
 
 	glClearColor(1,1,1,0);
@@ -177,6 +212,7 @@ int main(int argc, char *argv[])
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glEnable(GL_LINE_SMOOTH);
 	glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
+	//This doesn't even work, but it's okay, we have a stupid workaround
 	/*glEnable(GL_POLYGON_SMOOTH);
 	glHint(GL_POLYGON_SMOOTH_HINT, GL_NICEST);*/
 

@@ -16,6 +16,9 @@
 //constants
 const float M_TAU=2*M_PI;
 
+//Degrees counter-clockwise from straight right; this is fairly standard.
+//These should be used as base values and not added together because that would
+//be confusing.
 namespace direction
 {
 	const float right=0*M_TAU/8;
@@ -28,6 +31,7 @@ namespace direction
 	const float downright=7*M_TAU/8;
 };
 
+//sprintf, but better
 template <class... args>
 std::string strprintf(const std::string &format, args... a)
 {
@@ -38,6 +42,7 @@ std::string strprintf(const std::string &format, args... a)
 		return s;
 }
 
+//I don't think this is used, but it might one day be useful
 template <class T>
 inline T bound(const T &v, const T &l, const T &r)
 {
