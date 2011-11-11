@@ -5,10 +5,10 @@ CPPFLAGS=-Wall -Wextra -Weffc++ -O2 -std=gnu++0x
 # I don't even know why I did this, this Makefile only works with GNU make anyway
 CPP=g++
 
-OBJECTS=inaequalem.o enemy.o bullet.o player.o
+OBJECTS=inaequalem.o enemy.o bullet.o player.o model.o
 DEPENDS=$(OBJECTS:%.o=%.d)
 
-.PHONY: clean
+.PHONY: clean run
 
 inaequalem: $(OBJECTS)
 	$(CPP) $(CPPFLAGS) $(OBJECTS) -o inaequalem $(GLFLAGS)
@@ -22,3 +22,5 @@ $(OBJECTS): %.o: %.cpp
 clean:
 	rm -f $(OBJECTS) $(DEPENDS) inaequalem *~
 
+run:
+	./inaequalem

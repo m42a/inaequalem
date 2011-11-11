@@ -7,7 +7,7 @@ class color
 public:
 	float p[4];
 
-	vertex(float r, float g, float b, float a=1) : p({r,g,b,a}) {}
+	color(float r, float g, float b, float a=1) : p({r,g,b,a}) {}
 	operator float*() {return p;}
 	operator const float*() const {return p;}
 };
