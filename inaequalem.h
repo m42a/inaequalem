@@ -7,11 +7,7 @@
 #include <cmath>
 #include "vertex.h"
 
-#ifdef __APPLE__
-#  include <GLUT/glut.h>
-#else
-#  include <GL/glut.h>
-#endif
+#include "glut.h"
 
 //constants
 const float M_TAU=2*M_PI;

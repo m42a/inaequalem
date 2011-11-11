@@ -1,0 +1,70 @@
+This file stores definitions of objects relating to the game.
+
+==========
+
+The type string shall refer either to:
+1. A contiguous sequence of non-whitespace characters that does not contain a
+   double-hyphen.
+2. A string enclosed in a pair of double-quotes that does not contain any
+   unescaped double-quotes or backslashes.
+It is impossible to start a type 1 string with a double-quote; to do so you
+must start a type 2 string with an escaped double-quote.
+
+The type color shall refer to the string color followed by a list of 4 floating
+numbers, all between 0 and 1, inclusive.
+
+The type vertex shall refer the string vertex followed by a list of 3 floating
+point numbers.
+
+The type triangle shall refer to the string triangle followed by a list of 3
+vertices.  Each vertex may optionally be preceded by a color.
+
+==========
+
+Every definition is identified by a double-hyphen, followed by an identifier.
+Accepted identifiers are include, define, model, bullet, and enemy. Every
+definition ends with a double-hyphen.
+
+==========
+
+Include includes other data files.  It takes a list of strings, and parses the
+filename corresponding to each string sequentially before parsing the next
+definition.  Files should be specified with either absolute paths or paths
+relative to the program's working directory, not to the parent file's
+directory.  Included files may include other files recursively.  Please try not
+to include yourself, the parser isn't smart enough to break the resulting loop.
+
+==========
+
+A definition consists of a list of names, each followed by a non-string type.
+When the parser encounters a previously-defined name of the expected type, it
+will parse the name as if it were its definition.
+
+==========
+
+Each model consists of an id, followed by a list of colors and triangles.  An
+id is a string.  If the same id is defined more than once, the most recent
+definition is used.
+
+
+==========
+
+You can comment this file by placing text anywhere outside definitions;
+comments are not allowed inside definitions.
+
+The empty model
+-- model empty --
+
+-- define
+	black	color 0 0 0 1
+	red	color 1 0 0 1
+	green	color 0 1 0 1
+	blue	color 0 0 1 1
+	cyan	color 0 1 1 1
+	magenta	color 1 0 1 1
+	yellow	color 1 1 0 1
+	white	color 1 1 1 1
+--
+
+
+

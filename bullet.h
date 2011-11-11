@@ -1,11 +1,7 @@
 #ifndef BULLET_H_
 #define BULLET_H_
 
-#ifdef __APPLE__
-#  include <GLUT/glut.h>
-#else
-#  include <GL/glut.h>
-#endif
+#include "glut.h"
 
 #include <vector>
 

@@ -1,11 +1,7 @@
 #ifndef ENEMY_H_
 #define ENEMY_H_
 
-#ifdef __APPLE__
-#  include <GLUT/glut.h>
-#else
-#  include <GL/glut.h>
-#endif
+#include "glut.h"
 
 #include "bullet.h"
 
