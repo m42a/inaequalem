@@ -22,5 +22,5 @@ $(OBJECTS): %.o: %.cpp
 clean:
 	rm -f $(OBJECTS) $(DEPENDS) inaequalem *~
 
-run:
+run: inaequalem
 	./inaequalem

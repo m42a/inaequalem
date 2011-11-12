@@ -1,7 +1,11 @@
 #include <iostream>
+#include <string>
 #include <vector>
 #include <algorithm>
+#include <functional>
 #include <ctime>
+#include <cctype>
+#include <exception>
 
 #include "inaequalem.h"
 #include "bullet.h"
@@ -64,6 +68,155 @@ void drawSidepanel()
 		writetext(1.02, .5-.03*textlineheight/textheight, .02, strprintf("pb[0].y=%f",pb[0].y));
 	//Debugging output, but everyone loves FPS counters, so it'll probably stay
 	writetext(1.02, .02, .03, fps);
+}
+
+void addtriangle(string name, const triangle &t)
+
+void addvertex(string name, const vertex &v)
+
+void addcolor(string name, const color &c)
+
+vertex parsevertex(ifstream &ifs)
+{
+	float f1, f2, f3;
+	ifs >> f1 >> f2 >> f3;
+	if (!ifs)
+		throw string("Error parsing vertex.");
+	return {f1,f2,f3};
+}
+
+color parsecolor(ifstream &ifs)
+{
+	float f1, f2, f3, f4;
+	ifs >> f1 >> f2 >> f3 >> f4;
+	if (!ifs)
+		throw string("Error parsing vertex.");
+	return {f1,f2,f3,f4};
+}
+
+triangle parsetriangle(ifstream &ifs)
+
+void parsebullet(ifstream &ifs)
+
+void parseenemy(ifstream &ifs)
+
+void parsemodel(ifstream &ifs)
+
+void parsedefine(ifstream &ifs)
+{
+	string name;
+	//ifs comes after the assignement sine it modifies ifs
+	while ((name=parsestring(ifs))!="--" && ifs)
+	{
+		try
+		{
+			string type=parsestring(ifs);
+			if (type=="color")
+				addcolor(name, parsecolor(ifs));
+			if (type=="vertex")
+				addvertex(name, parsevertex(ifs));
+			if (type=="triangle")
+				addtriangle(name, parsetriangle(ifs));
+			else
+				throw "Error: unrecognized type \""+type+"\".";
+		}
+		catch (string s)
+			throw "     In definition of \""+name+"\":\n"+s;
+	}
+	//An error occured before the section ended
+	if (name!="--")
+		throw string("Error: unexpected end of \"define\" directive");
+}
+
+void parseinclude(ifstream &ifs)
+{
+	string fname;
+	//ifs comes after the assignement sine it modifies ifs
+	while ((fname=parsestring(ifs))!="--" && ifs)
+	{
+		try
+		{
+			parse(fname);
+		}
+		catch (string s)
+			throw "   In file \""+fname+"\":\n"+s;
+	}
+	//An error occured before the section ended
+	if (fname!="--")
+		throw string("Error: unexpected end of \"include\" directive");
+}
+
+string parsestring(ifstream &ifs)
+{
+	char c;
+	//Discard whitespace
+	while (ifs >> c && isspace(c))
+		;
+	if (ifs.eof())
+		throw string("Error: unexpected end of file.");
+	if (ifs.fail())
+		throw string("An unexpected error occured while reading from the file.");
+	string val;
+	//We found a double-hyphen
+	if (c=='-' && ifs.peek()=='-')
+	{
+		ifs >> c;
+		return "--";
+	}
+	//A type 1 string
+	if (c!='"')
+	{
+		val=c;
+		//This will pull the next whitespace character out of the
+		//stream, but we never use those anyway.
+		while (ifs >> c && !isspace(c))
+			val.push_back(c);
+		//Be tolerant and assume an EOF delimits a type 1 string.
+		return val;
+	}
+	//A type 2 string
+	while (ifs >> c && c!='"')
+	{
+		//Next character gets treated as a literal
+		if (c=='\\')
+			ifs >> c;
+		val.push_back(c);
+	}
+	if (c!='"')
+		throw string("Error: unexpected end of string.");
+	return val;
+}
+
+//parse failing should be fatal
+void parse(const string &fname)
+{
+	ifstream ifs(fname);
+	if (!ifs.is_open())
+		throw "Error: file \""+fname+"\" does not exist";
+	string tmp;
+	//Look for the next hyphen
+	while (getline(ifs, tmp, '-'))
+	{
+		//Normally this would be peek, but if it's not a hyphen it
+		//won't show up when we're looking for a hyphen, and if it is,
+		//we'd just discard it to get to the identifier after it.
+		if (ifs.get()!='-')
+			continue;
+		tmp=parsestring(ifs);
+		if (tmp=="include")
+			parseinclude(ifs);
+		else if (tmp=="define")
+			parsedefine(ifs);
+		else if (tmp=="model")
+			parsemodel(ifs);
+		else if (tmp=="bullet")
+			parsebullet(ifs);
+		else if (tmp=="enemy")
+			parseenemy(ifs);
+		else
+			throw "Error: \"" + tmp + "\" is not a valid identifier.";
+
+	}
 }
 
 void render()
@@ -142,11 +295,12 @@ void gamelogic(int v)
 		double frames=32/diff;
 		//This should really be a variadic template function
 		//This is a function, there's no reason not to just call strprintf
-		int size=snprintf(NULL, 0, "FPS: %05.2f", frames);
+		/*int size=snprintf(NULL, 0, "FPS: %05.2f", frames);
 		char *s=new char[size+1];
 		sprintf(s, "FPS: %05.2f", frames);
 		fps=s;
-		delete[] s;
+		delete[] s;*/
+		fps=strprintf("FPS: %05.2f", frames);
 		then=now; //This happens soon
 	}
 	glutPostRedisplay();
@@ -200,6 +354,20 @@ void mousemove(int x, int y)
 int main(int argc, char *argv[])
 {
 	glutInit(&argc, argv);
+	if (argc==1)
+	{
+		cout << "Usage: " << argv[0] << " datafile\n";
+		return 1;
+	}
+	try
+	{
+		parse(argv[1]);
+	}
+	catch (string s)
+	{
+		cout << s << endl;
+		return 2;
+	}
 	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA);
 	glutInitWindowSize(640, 480);
 	glutCreateWindow("Inaequalem");

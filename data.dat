@@ -3,12 +3,13 @@ This file stores definitions of objects relating to the game.
 ==========
 
 The type string shall refer either to:
-1. A contiguous sequence of non-whitespace characters that does not contain a
-   double-hyphen.
+1. A contiguous sequence of non-whitespace characters.
 2. A string enclosed in a pair of double-quotes that does not contain any
    unescaped double-quotes or backslashes.
 It is impossible to start a type 1 string with a double-quote; to do so you
-must start a type 2 string with an escaped double-quote.
+must start a type 2 string with an escaped double-quote.  It is illegal for a
+type 2 string to consist only of a double-hyphen, and it is illegal for a type
+1 string to contain a double-hyphen at all.
 
 The type color shall refer to the string color followed by a list of 4 floating
 numbers, all between 0 and 1, inclusive.
@@ -36,16 +37,18 @@ to include yourself, the parser isn't smart enough to break the resulting loop.
 
 ==========
 
-A definition consists of a list of names, each followed by a non-string type.
-When the parser encounters a previously-defined name of the expected type, it
-will parse the name as if it were its definition.
+A definition consists of a list of names, each followed by a definition.  A
+name is a string, and a definition is a non-string value.  When the parser
+encounters a previously-defined name of the expected type, it will parse the
+name as if it were its definition.  Names may not be redefined; however,
+repeating the same definition is allowed.  Identifiers, type names, and model
+ids are not valid names.
 
 ==========
 
-Each model consists of an id, followed by a list of colors and triangles.  An
-id is a string.  If the same id is defined more than once, the most recent
-definition is used.
-
+Each model consists of an id, followed by a list of colors, triangles, and
+model ids.  An id is a string.  If the same id is defined more than once, the
+most recent definition is used.
 
 ==========
 
@@ -55,6 +58,7 @@ comments are not allowed inside definitions.
 The empty model
 -- model empty --
 
+Useful colors
 -- define
 	black	color 0 0 0 1
 	red	color 1 0 0 1
