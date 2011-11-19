@@ -105,7 +105,7 @@ void stepandcull(vector<entity> &v)
 	v.erase(i, v.end());
 }
 
-void gamelogic(int v)
+void gamelogic(int)
 {
 	//Reset the timer at the beginning of the function so we minimize lag
 	//if the game logic takes a while
@@ -161,19 +161,19 @@ void gamelogic(int v)
 //state and never going above the up state or below the down state.  I
 //guarantee this will happen at least once in testing, even though it's
 //logically impossible.
-void keydown(unsigned char key, int x, int y)
+void keydown(unsigned char key, int, int)
 {
 	if (key=='z')
 		shooting=true;
 }
 
-void keyup(unsigned char key, int x, int y)
+void keyup(unsigned char key, int, int)
 {
 	if (key=='z')
 		shooting=false;
 }
 
-void specialdown(int key, int x, int y)
+void specialdown(int key, int, int)
 {
 	if (key==GLUT_KEY_UP)
 		movedir+=3;
@@ -185,7 +185,7 @@ void specialdown(int key, int x, int y)
 		movedir-=1;
 }
 
-void specialup(int key, int x, int y)
+void specialup(int key, int, int)
 {
 	if (key==GLUT_KEY_UP)
 		movedir-=3;
@@ -195,11 +195,6 @@ void specialup(int key, int x, int y)
 		movedir-=1;
 	else if (key==GLUT_KEY_RIGHT)
 		movedir+=1;
-}
-
-//I have a feeling we might not need this, but it's registered just in case
-void mousemove(int x, int y)
-{
 }
 
 int main(int argc, char *argv[])
@@ -243,8 +238,6 @@ int main(int argc, char *argv[])
 	glutKeyboardUpFunc(keyup);
 	glutSpecialFunc(specialdown);
 	glutSpecialUpFunc(specialup);
-	glutMotionFunc(mousemove);
-	glutPassiveMotionFunc(mousemove);
 
 
 	glutMainLoop();
