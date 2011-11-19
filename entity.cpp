@@ -1,27 +1,22 @@
-#include <cmath>
-
-#include "bullet.h"
+#include "entity.h"
 
 using namespace std;
 
-void bullet::step()
+/*void entity::step()
 {
 	if (isdestroyed())
 		return;
-	//++counter;
-	if (ai==0)
-	{
-		x+=speed*cos(direction);
-		y+=speed*sin(direction);
-	}
-	if (x<-.1 || x>1.1 || y<-.1 || y>1.1)
-		destroy();
-}
+	pai->step(this);
+}*/
 
-//This should be abstracted into a "type" class, instead of every bullet being
+//This should be abstracted into the model class, instead of every entity being
 //a cyan pentagon
-void bullet::draw() const
+void entity::draw() const
 {
+	//glTranslatef(x,y,0);
+	//model::models[m].draw();
+	//glTranslatef(-x,-y,0);
+	float direction=0;
 	glColor3f(0,1,1);
 	drawaapolygon({
 			{x+.01f*cos(direction),y+.01f*sin(direction)},

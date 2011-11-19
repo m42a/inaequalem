@@ -1,11 +1,16 @@
 # This is how GLUT works in Cygwin.  Saner environments may have a smaller set of gflags
 GLFLAGS=-isystem /usr/include/w32api -lopengl32 -lglu32 -lglut32 -L/usr/lib/w32api/
+# Flags to optimize the program
+OPTFLAGS=-Wall -Wextra -std=gnu++0x -O3 -fomit-frame-pointer -march=native -flto -funsafe-loop-optimizations -Wunsafe-loop-optimizations
 # Enable all the warnings, plus extra warnings
-CPPFLAGS=-Wall -Wextra -Weffc++ -O2 -std=gnu++0x
+DEBUGFLAGS=-Wall -Wextra -std=gnu++0x -ggdb3
+
+CPPFLAGS=$(OPTFLAGS)
+#CPPFLAGS=$(DEBUGFLAGS)
 # I don't even know why I did this, this Makefile only works with GNU make anyway
 CPP=g++
 
-OBJECTS=inaequalem.o enemy.o bullet.o player.o model.o
+OBJECTS=inaequalem.o entity.o player.o model.o parse.o ai.o
 DEPENDS=$(OBJECTS:%.o=%.d)
 
 .PHONY: clean run

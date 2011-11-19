@@ -4,9 +4,8 @@
 #include "glut.h"
 
 //This is pretty much just for passing to glVertex3fv
-class vertex
+struct vertex
 {
-public:
 	float p[3];
 
 	vertex(float x=0, float y=0, float z=0) : p({x,y,z}) {}

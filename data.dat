@@ -48,7 +48,7 @@ ids are not valid names.
 
 Each model consists of an id, followed by a list of colors, triangles, and
 model ids.  An id is a string.  If the same id is defined more than once, the
-most recent definition is used.
+most recent definition is used.  The model named player is used for the player.
 
 ==========
 
@@ -70,5 +70,9 @@ Useful colors
 	white	color 1 1 1 1
 --
 
-
-
+-- model player
+	triangle white
+		vertex 0 .05 0
+		vertex .0433 -.025 0
+		vertex .0433  .025 0
+--

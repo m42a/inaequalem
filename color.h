@@ -1,12 +1,14 @@
 #ifndef COLOR_H_
 #define COLOR_H_
 
+#include "glut.h"
+
 //This is pretty much just for passing to glColor4fv
-class color
+struct color
 {
-public:
 	float p[4];
 
+	color() = default;
 	color(float r, float g, float b, float a=1) : p({r,g,b,a}) {}
 	operator float*() {return p;}
 	operator const float*() const {return p;}

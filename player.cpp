@@ -2,23 +2,23 @@
 
 using namespace std;
 
+const float SQRT_3=1.73205080756887729;
+
+void player::step()
+{
+}
+
 void player::draw() const
 {
+	/*
 	glColor3f(1,1,1);
 	drawaapolygon({
 			{x, y+.05f},
 			{x+SQRT_3/40, y-.025f},
 			{x-SQRT_3/40, y-.025f}});
+	*/
+	glTranslatef(x,y,0);
+	models[m].drawsolid();
+	glTranslatef(-x,-y,0);
 }
 
-void player::move(float angle)
-{
-	x=bound(x+speed*cos(angle),0.0f,1.0f);
-	y=bound(y+speed*sin(angle),0.0f,1.0f);
-}
-
-void player::moveto(float xx, float yy)
-{
-	x=bound(xx,0.0f,1.0f);
-	y=bound(yy,0.0f,1.0f);
-}

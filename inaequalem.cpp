@@ -8,9 +8,9 @@
 #include <exception>
 
 #include "inaequalem.h"
-#include "bullet.h"
-#include "enemy.h"
+#include "entity.h"
 #include "player.h"
+#include "parse.h"
 
 using namespace std;
 
@@ -18,6 +18,7 @@ const float ratio=640.0/480.0; //The desired width/height ratio
 const float textheight=119.05; //From the documentation
 const float textlineheight=119.05+33.33; //From the documentation
 
+// These should be part of the player class
 int movedir=0;
 bool shooting;
 
@@ -27,10 +28,9 @@ string fps; //This is the string to display as an FPS counter, do not rely on it
 
 //This is us and our bullets
 player p(.5, .5);
-vector<bullet> pb;
+vector<entity> pb;
 //These are the enemies and their bullets
-vector<enemy> e;
-vector<bullet> eb;
+vector<entity> e;
 
 //Write a string somewhere at a certain size.  Text defaults to the window
 //height, so try making the size somewhat small.  Text scales vertically and
@@ -70,163 +70,13 @@ void drawSidepanel()
 	writetext(1.02, .02, .03, fps);
 }
 
-void addtriangle(string name, const triangle &t)
-
-void addvertex(string name, const vertex &v)
-
-void addcolor(string name, const color &c)
-
-vertex parsevertex(ifstream &ifs)
-{
-	float f1, f2, f3;
-	ifs >> f1 >> f2 >> f3;
-	if (!ifs)
-		throw string("Error parsing vertex.");
-	return {f1,f2,f3};
-}
-
-color parsecolor(ifstream &ifs)
-{
-	float f1, f2, f3, f4;
-	ifs >> f1 >> f2 >> f3 >> f4;
-	if (!ifs)
-		throw string("Error parsing vertex.");
-	return {f1,f2,f3,f4};
-}
-
-triangle parsetriangle(ifstream &ifs)
-
-void parsebullet(ifstream &ifs)
-
-void parseenemy(ifstream &ifs)
-
-void parsemodel(ifstream &ifs)
-
-void parsedefine(ifstream &ifs)
-{
-	string name;
-	//ifs comes after the assignement sine it modifies ifs
-	while ((name=parsestring(ifs))!="--" && ifs)
-	{
-		try
-		{
-			string type=parsestring(ifs);
-			if (type=="color")
-				addcolor(name, parsecolor(ifs));
-			if (type=="vertex")
-				addvertex(name, parsevertex(ifs));
-			if (type=="triangle")
-				addtriangle(name, parsetriangle(ifs));
-			else
-				throw "Error: unrecognized type \""+type+"\".";
-		}
-		catch (string s)
-			throw "     In definition of \""+name+"\":\n"+s;
-	}
-	//An error occured before the section ended
-	if (name!="--")
-		throw string("Error: unexpected end of \"define\" directive");
-}
-
-void parseinclude(ifstream &ifs)
-{
-	string fname;
-	//ifs comes after the assignement sine it modifies ifs
-	while ((fname=parsestring(ifs))!="--" && ifs)
-	{
-		try
-		{
-			parse(fname);
-		}
-		catch (string s)
-			throw "   In file \""+fname+"\":\n"+s;
-	}
-	//An error occured before the section ended
-	if (fname!="--")
-		throw string("Error: unexpected end of \"include\" directive");
-}
-
-string parsestring(ifstream &ifs)
-{
-	char c;
-	//Discard whitespace
-	while (ifs >> c && isspace(c))
-		;
-	if (ifs.eof())
-		throw string("Error: unexpected end of file.");
-	if (ifs.fail())
-		throw string("An unexpected error occured while reading from the file.");
-	string val;
-	//We found a double-hyphen
-	if (c=='-' && ifs.peek()=='-')
-	{
-		ifs >> c;
-		return "--";
-	}
-	//A type 1 string
-	if (c!='"')
-	{
-		val=c;
-		//This will pull the next whitespace character out of the
-		//stream, but we never use those anyway.
-		while (ifs >> c && !isspace(c))
-			val.push_back(c);
-		//Be tolerant and assume an EOF delimits a type 1 string.
-		return val;
-	}
-	//A type 2 string
-	while (ifs >> c && c!='"')
-	{
-		//Next character gets treated as a literal
-		if (c=='\\')
-			ifs >> c;
-		val.push_back(c);
-	}
-	if (c!='"')
-		throw string("Error: unexpected end of string.");
-	return val;
-}
-
-//parse failing should be fatal
-void parse(const string &fname)
-{
-	ifstream ifs(fname);
-	if (!ifs.is_open())
-		throw "Error: file \""+fname+"\" does not exist";
-	string tmp;
-	//Look for the next hyphen
-	while (getline(ifs, tmp, '-'))
-	{
-		//Normally this would be peek, but if it's not a hyphen it
-		//won't show up when we're looking for a hyphen, and if it is,
-		//we'd just discard it to get to the identifier after it.
-		if (ifs.get()!='-')
-			continue;
-		tmp=parsestring(ifs);
-		if (tmp=="include")
-			parseinclude(ifs);
-		else if (tmp=="define")
-			parsedefine(ifs);
-		else if (tmp=="model")
-			parsemodel(ifs);
-		else if (tmp=="bullet")
-			parsebullet(ifs);
-		else if (tmp=="enemy")
-			parseenemy(ifs);
-		else
-			throw "Error: \"" + tmp + "\" is not a valid identifier.";
-
-	}
-}
-
 void render()
 {
 	glClear(GL_COLOR_BUFFER_BIT);
 	drawBackground();
 	p.draw();
-	for_each(e.cbegin(), e.cend(), mem_fun_ref(&enemy::draw));
-	for_each(pb.cbegin(), pb.cend(), mem_fun_ref(&bullet::draw));
-	for_each(eb.cbegin(), eb.cend(), mem_fun_ref(&bullet::draw));
+	for_each(e.cbegin(), e.cend(), mem_fun_ref(&entity::draw));
+	for_each(pb.cbegin(), pb.cend(), mem_fun_ref(&entity::draw));
 	//Draw the side panel over everything else, since we don't do scissoring
 	drawSidepanel();
 	glutSwapBuffers();
@@ -248,11 +98,10 @@ void resize(int w, int h)
 	glMatrixMode(GL_MODELVIEW);
 }
 
-template<class T>
-void stepandcull(vector<T> &v)
+void stepandcull(vector<entity> &v)
 {
-	for_each(v.begin(), v.end(), mem_fun_ref(&T::step));
-	auto i=remove_if(v.begin(), v.end(), mem_fun_ref(&T::isdestroyed));
+	for_each(v.begin(), v.end(), mem_fun_ref(&entity::step));
+	auto i=remove_if(v.begin(), v.end(), mem_fun_ref(&entity::isdestroyed));
 	v.erase(i, v.end());
 }
 
@@ -280,13 +129,15 @@ void gamelogic(int v)
 		p.move(direction::downright);
 	//Move the player's bullets
 	stepandcull(pb);
-	//Don't move the enemies or their bullets, since there's no collision detection
+	//Move the enemies
+	stepandcull(e);
+	p.step();
 	++ticker;
 	//Shoot every 4th tick
-	if (ticker%4==0 && shooting)
-		pb.emplace_back(p.x, p.y, 0, direction::up, .02);
+	/*if (ticker%4==0 && shooting)
+		pb.emplace_back(p.x, p.y, 0, direction::up, .02);*/
 	//This tracks ticks, not displayed frames (but it'll always be the
-	//correct unless we take more than 16 milliseconds for a tick)
+	//correct unless we take more than 16 milliseconds per tick)
 	if (ticker%32==0)
 	{
 		struct timespec now;
