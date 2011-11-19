@@ -110,7 +110,7 @@ void gamelogic(int)
 {
 	//Reset the timer at the beginning of the function so we minimize lag
 	//if the game logic takes a while
-	glutTimerFunc(16, gamelogic, 0);
+	glutTimerFunc(15, gamelogic, 0);
 	//There's got to be a better way to do this
 	if (movedir==-1)
 		p.move(direction::right);
@@ -233,7 +233,7 @@ int main(int argc, char *argv[])
 
 	glutDisplayFunc(render);
 	glutReshapeFunc(resize);
-	glutTimerFunc(16, gamelogic, 0);
+	glutTimerFunc(15, gamelogic, 0);
 	glutIgnoreKeyRepeat(true);
 	glutKeyboardFunc(keydown);
 	glutKeyboardUpFunc(keyup);

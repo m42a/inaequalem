@@ -1,7 +1,7 @@
 # This is how GLUT works in Cygwin.  Saner environments may have a smaller set of gflags
 GLFLAGS=-isystem /usr/include/w32api -lopengl32 -lglu32 -lglut32 -L/usr/lib/w32api/
 # Flags to optimize the program
-OPTFLAGS=-Wall -Wextra -std=gnu++0x -O3 -fomit-frame-pointer -march=native -flto -funsafe-loop-optimizations -Wunsafe-loop-optimizations
+OPTFLAGS=-Wall -Wextra -std=gnu++0x -O3 -fomit-frame-pointer -march=native -flto -funsafe-loop-optimizations -Wunsafe-loop-optimizations -Winline
 # Enable all the warnings, plus extra warnings
 DEBUGFLAGS=-Wall -Wextra -std=gnu++0x -ggdb3
 

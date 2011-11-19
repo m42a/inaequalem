@@ -167,6 +167,8 @@ void parsemodel(istream &in)
 				m.addtriangle(parsetriangle(in));
 			else if (istriangle(type))
 				m.addtriangle(triangles[type]);
+			else if (ismodel(type))
+				m.addmodel(models[type]);
 			else
 				throw "Unrecognized triangle \""+type+"\".";
 		}

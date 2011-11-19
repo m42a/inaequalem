@@ -17,6 +17,7 @@ struct model
 	void addvertex(const vertex &v, const color &c=color::nocolor()) {triangles.emplace_back(v, c);}
 	void addvertex(const coloredvertex &v) {triangles.push_back(v);}
 	void addtriangle(const triangle &t) {addvertex(t.v[0]);addvertex(t.v[1]);addvertex(t.v[2]);}
+	void addmodel(const model &m) {triangles.insert(triangles.end(), m.triangles.cbegin(), m.triangles.cend());}
 
 	void drawtriangles() const {glBegin(GL_TRIANGLES); std::for_each(triangles.cbegin(), triangles.cend(), std::mem_fun_ref(&coloredvertex::draw)); glEnd();}
 
