@@ -26,6 +26,7 @@ struct model
 
 extern std::unordered_map<std::string, model> models;
 
-inline bool ismodel(std::string m) {return models.count(m);}
+inline bool ismodel(std::string s) {return models.count(s);}
+inline void addmodel(std::string name, const model &m) {models[name]=m;}
 
 #endif

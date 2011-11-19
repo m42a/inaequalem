@@ -55,6 +55,7 @@ void drawBackground()
 
 void drawSidepanel()
 {
+	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 	glColor3f(0.2, 0.2, 0.2);
 	//Dark gray background
 	glRectf(1,0,ratio,1);

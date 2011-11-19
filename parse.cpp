@@ -2,9 +2,10 @@
 #include <string>
 #include <unordered_map>
 
-//#include <iostream>
+#include <iostream>
 
 #include "parse.h"
+#include "model.h"
 #include "triangle.h"
 #include "vertex.h"
 #include "color.h"
@@ -118,7 +119,7 @@ coloredvertex parsecoloredvertex(istream &in)
 		c=colors[name];
 		name=parsestring(in);
 	}
-	//We fall through after maybe parsing the color
+	//Fall through after trying to parse the color, whether we succeed or not
 	if (name=="vertex")
 		return {parsevertex(in), c};
 	if (isvertex(name))
@@ -153,7 +154,30 @@ void parseenemy(istream &in)
 
 void parsemodel(istream &in)
 {
-	donothing(in);
+	string name=parsestring(in);
+	if (!in || name=="--")
+		throw string("Error: unnamed model");
+	model m;
+	string type;
+	while ((type=parsestring(in))!="--" && in)
+	{
+		try
+		{
+			if (type=="triangle")
+				m.addtriangle(parsetriangle(in));
+			else if (istriangle(type))
+				m.addtriangle(triangles[type]);
+			else
+				throw "Unrecognized triangle \""+type+"\".";
+		}
+		catch (string s)
+		{
+			throw "     In model \""+name+"\":\n"+s;
+		}
+	}
+	models[name]=m;
+	if (type!="--")
+		throw string("Error: unexpected end of \"model\" directive");
 }
 
 void parsedefine(istream &in)

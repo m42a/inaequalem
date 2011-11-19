@@ -70,9 +70,10 @@ Useful colors
 	white	color 1 1 1 1
 --
 
+The player model
 -- model player
 	triangle white
 		vertex 0 .05 0
-		vertex .0433 -.025 0
-		vertex .0433  .025 0
+		vertex -.0433 -.025 0
+		vertex  .0433 -.025 0
 --
