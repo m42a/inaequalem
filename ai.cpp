@@ -5,7 +5,7 @@
 
 //ai &ai::operator=(const ai &) = default;
 
-ai::~ai() = default;
+//ai::~ai() = default;
 
 void ai::takedamage(damage type, float dam)
 {
@@ -13,5 +13,18 @@ void ai::takedamage(damage type, float dam)
 		body->health-=FLT_MIN;
 	else
 		body->health-=dam;
+	if (body->health<=0)
+		body->destroy();
 }
 
+void newtonian::step()
+{
+	//if (!body)
+	//	return;
+	velx+=accx;
+	vely+=accy;
+	body->x+=velx;
+	body->y+=vely;
+	if (body->y<-.1 || body->y>1.1 || body->x<-.1 || body->x>1.1)
+		body->destroy();
+}

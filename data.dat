@@ -77,3 +77,28 @@ The player model
 		vertex -.0433 -.025 0
 		vertex  .0433 -.025 0
 --
+
+The model for the player's bullet
+-- model bullet
+	triangle cyan
+		vertex 0 0.01 0
+		vertex -0.00951057 0.00309017 0
+		vertex 0 0 0
+	triangle
+		vertex -0.00951057 0.00309017 0
+		vertex -0.00587785 -0.00809017 0
+		vertex 0 0 0
+	triangle
+		vertex -0.00587785 -0.00809017 0
+		vertex 0.00587785 -0.00809017 0
+		vertex 0 0 0
+	triangle
+		vertex 0.00587785 -0.00809017 0
+		vertex 0.00951057 0.00309017 0
+		vertex 0 0 0
+	triangle
+		vertex 0.00951057 0.00309017 0
+		vertex 0 0.01 0
+		vertex 0 0 0
+--
+

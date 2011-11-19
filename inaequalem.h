@@ -3,6 +3,7 @@
 
 #include <string>
 #include <cmath>
+#include <cfloat>
 #include <vector>
 
 #include "player.h"
@@ -40,15 +41,15 @@ inline T bound(const T &v, const T &l, const T &r)
 	return v;
 }
 
-entity &spawnenemy(float x, float y, ai *a)
+inline entity &spawnenemy(float x, float y, const std::unique_ptr<ai> &a, const std::string m="", float h=1)
 {
-	e.emplace_back(x,y,a);
+	e.emplace_back(x,y,a,m,h);
 	return e.back();
 }
 
-entity &spawnbullet(float x, float y, ai *a)
+inline entity &spawnbullet(float x, float y, const std::unique_ptr<ai> &a, const std::string m="", float h=FLT_MIN)
 {
-	pb.emplace_back(x,y,a);
+	pb.emplace_back(x,y,a,m,h);
 	return pb.back();
 }
 

@@ -7,6 +7,7 @@
 
 #include "glut.h"
 #include "model.h"
+#include "damage.h"
 
 //#include "inaequalem.h"
 //#include "entity.h"
@@ -16,9 +17,10 @@ class player
 public:
 	player(float xx, float yy, float s=.01) : x(xx), y(yy), speed(s), health(FLT_MIN), m("player") {}
 
-	void step();
+	void step(int tick);
 	void draw() const;
 
+	void takedamage(damage type, float dam) {if (type!=damage::none) health-=dam;}
 	void moveto(float xx, float yy) {x=xx; y=yy;}
 	void moveby(float xx, float yy) {x+=xx; y+=yy;}
 	void moveat(float speed, float dir) {x+=speed*cos(dir); y+=speed*sin(dir);}

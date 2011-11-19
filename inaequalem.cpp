@@ -20,10 +20,10 @@ const float textlineheight=119.05+33.33; //From the documentation
 
 // These should be part of the player class
 int movedir=0;
-bool shooting;
+//bool shooting;
+int ticker=0;
 
 struct timespec then;
-int ticker=0;
 string fps; //This is the string to display as an FPS counter, do not rely on it being parsable
 
 //This is us and our bullets
@@ -132,7 +132,7 @@ void gamelogic(int)
 	stepandcull(pb);
 	//Move the enemies
 	stepandcull(e);
-	p.step();
+	p.step(ticker);
 	++ticker;
 	//Shoot every 4th tick
 	/*if (ticker%4==0 && shooting)
@@ -164,14 +164,14 @@ void gamelogic(int)
 //logically impossible.
 void keydown(unsigned char key, int, int)
 {
-	if (key=='z')
-		shooting=true;
+	/*if (key=='z')
+		shooting=true;*/
 }
 
 void keyup(unsigned char key, int, int)
 {
-	if (key=='z')
-		shooting=false;
+	/*if (key=='z')
+		shooting=false;*/
 }
 
 void specialdown(int key, int, int)
