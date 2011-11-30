@@ -5,6 +5,7 @@
 #include <cmath>
 #include <cfloat>
 #include <vector>
+#include <unordered_map>
 
 #include "player.h"
 #include "entity.h"
@@ -15,6 +16,8 @@
 extern player p;
 extern std::vector<entity> pb;
 extern std::vector<entity> e;
+extern std::unordered_multimap<int, entity> lb;
+extern std::unordered_multimap<int, entity> le;
 
 //Degrees counter-clockwise from straight right; this is fairly standard.
 //These should be used as base values and not added together because that would
@@ -47,10 +50,42 @@ inline entity &spawnenemy(float x, float y, const std::unique_ptr<ai> &a, const 
 	return e.back();
 }
 
+inline entity &spawnenemy(const entity &ee)
+{
+	e.push_back(ee);
+	return e.back();
+}
+
 inline entity &spawnbullet(float x, float y, const std::unique_ptr<ai> &a, const std::string m="", float h=FLT_MIN)
 {
 	pb.emplace_back(x,y,a,m,h);
 	return pb.back();
+}
+inline entity &spawnbullet(const entity &ee)
+{
+	pb.push_back(ee);
+	return e.back();
+}
+
+
+inline entity &addenemy(const entity &e, int t)
+{
+	return (le.insert({t,e}))->second;
+}
+
+inline entity &addenemy(int t, const entity &e)
+{
+	return (le.insert({t,e}))->second;
+}
+
+inline entity &addbullet(const entity &e, int t)
+{
+	return (lb.insert({t,e}))->second;
+}
+
+inline entity &addbullet(int t, const entity &e)
+{
+	return (lb.insert({t,e}))->second;
 }
 
 #endif

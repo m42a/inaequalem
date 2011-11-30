@@ -31,6 +31,9 @@ player p(.5, .5);
 vector<entity> pb;
 //These are the enemies and their bullets
 vector<entity> e;
+//These are things that will happen, ordered by tick
+unordered_multimap<int, entity> lb;
+unordered_multimap<int, entity> le;
 
 //Write a string somewhere at a certain size.  Text defaults to the window
 //height, so try making the size somewhat small.  Text scales vertically and
@@ -133,6 +136,12 @@ void gamelogic(int)
 	//Move the enemies
 	stepandcull(e);
 	p.step(ticker);
+	auto aaa=lb.equal_range(ticker);
+	for_each(aaa.first, aaa.second, [](const pair<int, entity> &p){spawnbullet(p.second);});
+	lb.erase(aaa.first, aaa.second);
+	aaa=le.equal_range(ticker);
+	for_each(aaa.first, aaa.second, [](const pair<int, entity> &p){spawnenemy(p.second);});
+	le.erase(aaa.first, aaa.second);
 	++ticker;
 	//Shoot every 4th tick
 	/*if (ticker%4==0 && shooting)
