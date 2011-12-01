@@ -1,0 +1,15 @@
+Coding stuff:
+	Add 3D view
+	Add keybinds for rotating/zooming the view
+	Put views side-by-side
+	Add level transitions and bound the player's y
+	Add force-field-like visual effect
+
+Spec stuff:
+	Add models
+	Add entities to the spec
+	Parse entities
+
+Design stuff:
+	Design actual levels
+	Add background
