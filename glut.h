@@ -15,8 +15,13 @@
 #   define nullptr NULL
 #endif
 
+#define ARRAYSIZE(x) (sizeof(x)/sizeof(*(x)))
+
 const float M_TAU=2*M_PI;
 
+//Degrees counter-clockwise from straight right; this is fairly standard.
+//These should be used as base values and not added together because that would
+//be confusing.
 namespace direction
 {
 	const float right=0*M_TAU/8;
@@ -28,5 +33,7 @@ namespace direction
 	const float down=6*M_TAU/8;
 	const float downright=7*M_TAU/8;
 };
+
+const float levelheight[]={.2,.8};
 
 #endif

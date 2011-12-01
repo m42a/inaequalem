@@ -18,9 +18,10 @@ void player::step(int tick)
 
 void player::draw() const
 {
-	glTranslatef(x,y,0);
+	glPushMatrix();
+	glTranslatef(x,y,levelheight[level]);
 	models[m].drawsolid();
 	models[m].drawwireframe();
-	glTranslatef(-x,-y,0);
+	glPopMatrix();
 }
 

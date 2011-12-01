@@ -19,9 +19,6 @@ extern std::vector<entity> e;
 extern std::unordered_multimap<int, entity> lb;
 extern std::unordered_multimap<int, entity> le;
 
-//Degrees counter-clockwise from straight right; this is fairly standard.
-//These should be used as base values and not added together because that would
-//be confusing.
 //sprintf, but better
 template <class... args>
 std::string strprintf(const std::string &format, args... a)
