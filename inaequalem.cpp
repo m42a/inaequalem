@@ -77,33 +77,11 @@ void drawSidepanel()
 void render()
 {
 	glClear(GL_COLOR_BUFFER_BIT);
-	glEnable(GL_STENCIL_TEST);
-	glStencilFunc(GL_ALWAYS, 1, 1);
-	glBegin(GL_TRIANGLE_STRIP);
-	{
-		glVertex3f(0,0,1);
-		glVertex3f(0,0,0);
-		glVertex3f(0,1,1);
-		glVertex3f(0,1,0);
-		glVertex3f(1,1,0);
-		glVertex3f(0,0,0);
-		glVertex3f(1,0,0);
-		glVertex3f(0,0,1);
-		glVertex3f(1,0,1);
-		glVertex3f(0,1,1);
-		glVertex3f(1,1,1);
-		glVertex3f(1,1,0);
-		glVertex3f(1,0,1);
-		glVertex3f(1,0,0);
-	}
-	glEnd();
-	glStencilFunc(GL_EQUAL, 1, 1);
 	drawBackground();
 	p.draw();
 	for_each(e.cbegin(), e.cend(), mem_fun_ref(&entity::draw));
 	for_each(pb.cbegin(), pb.cend(), mem_fun_ref(&entity::draw));
-	glDisable(GL_STENCIL_TEST);
-	//Draw the side panel over everything else
+	//Draw the side panel over everything else, since we don't do scissoring
 	drawSidepanel();
 	glutSwapBuffers();
 }
@@ -246,12 +224,21 @@ int main(int argc, char *argv[])
 		cout << s << endl;
 		return 2;
 	}
-	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA | GLUT_STENCIL);
+	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA);
 	glutInitWindowSize(640, 480);
 	glutCreateWindow("Inaequalem");
 
 	//Something something POSIX
 	clock_gettime(CLOCK_MONOTONIC, &then);
+
+	glClearColor(1,1,1,0);
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	glEnable(GL_LINE_SMOOTH);
+	glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
+	//This doesn't even work, but it's okay, we have a stupid workaround
+	/*glEnable(GL_POLYGON_SMOOTH);
+	glHint(GL_POLYGON_SMOOTH_HINT, GL_NICEST);*/
 
 	glutDisplayFunc(render);
 	glutReshapeFunc(resize);
@@ -262,14 +249,6 @@ int main(int argc, char *argv[])
 	glutSpecialFunc(specialdown);
 	glutSpecialUpFunc(specialup);
 
-	glClearColor(1,1,1,0);
-	glEnable(GL_BLEND);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	glEnable(GL_LINE_SMOOTH);
-	glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
-	//This doesn't even work, but it's okay, we have a stupid workaround
-	/*glEnable(GL_POLYGON_SMOOTH);
-	glHint(GL_POLYGON_SMOOTH_HINT, GL_NICEST);*/
 
 	glutMainLoop();
 }
