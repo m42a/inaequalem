@@ -16,6 +16,22 @@ void player::step(int tick)
 		spawnbullet(x, y, bulletai, "bullet");
 }
 
+void player::moveto(float xx, float yy)
+{
+	y=bound(yy, 0.0f, 1.0f);
+	x=xx;
+	while (x<0)
+	{
+		moveleveldown();
+		x+=1;
+	}
+	while (x>1)
+	{
+		movelevelup();
+		x-=1;
+	}
+}
+
 void player::draw() const
 {
 	glPushMatrix();

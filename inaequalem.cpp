@@ -66,10 +66,8 @@ void drawSidepanel()
 	//Text in white
 	writetext(1.02, .9, .04, "Score: &e0");
 	//Debugging output, remove in release
-	writetext(1.02, .5, .02, strprintf("pb.size()=%d",pb.size()));
-	//Debugging output, remove in release
-	if (pb.size()!=0)
-		writetext(1.02, .5-.03*textlineheight/textheight, .02, strprintf("pb[0].y=%f",pb[0].y));
+	writetext(1.02, .5, .02, strprintf("Health: %g", p.health));
+	writetext(1.02, .5-.02*textlineheight/textheight, .02, strprintf("Level: %d", p.level));
 	//Debugging output, but everyone loves FPS counters, so it'll probably stay
 	writetext(1.02, .02, .03, fps);
 }
@@ -109,6 +107,13 @@ void stepandcull(vector<entity> &v)
 	v.erase(i, v.end());
 }
 
+void spawnentities(int tick, unordered_multimap<int, entity> &e)
+{
+	auto ents=e.equal_range(tick);
+	for_each(ents.first, ents.second, [](const pair<int, entity> &p){spawnbullet(p.second);});
+	e.erase(ents.first, ents.second);
+}
+
 void gamelogic(int)
 {
 	//Reset the timer at the beginning of the function so we minimize lag
@@ -136,12 +141,8 @@ void gamelogic(int)
 	//Move the enemies
 	stepandcull(e);
 	p.step(ticker);
-	auto aaa=lb.equal_range(ticker);
-	for_each(aaa.first, aaa.second, [](const pair<int, entity> &p){spawnbullet(p.second);});
-	lb.erase(aaa.first, aaa.second);
-	aaa=le.equal_range(ticker);
-	for_each(aaa.first, aaa.second, [](const pair<int, entity> &p){spawnenemy(p.second);});
-	le.erase(aaa.first, aaa.second);
+	spawnentities(ticker, lb);
+	spawnentities(ticker, le);
 	++ticker;
 	//Shoot every 4th tick
 	/*if (ticker%4==0 && shooting)
