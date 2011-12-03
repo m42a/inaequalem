@@ -10,7 +10,6 @@ Coding stuff:
 
 Spec stuff:
 	Add entities to the spec
-	Parse entities
 
 Design stuff:
 	Design actual levels
