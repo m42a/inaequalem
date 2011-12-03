@@ -44,7 +44,7 @@ public:
 	newtonian(float vx, float vy, float ax, float ay, entity *e=nullptr) : ai(1,e), velx(vx), vely(vy), accx(ax), accy(ay) {}
 	newtonian(const newtonian &n, entity *e=nullptr) : ai(1,e), velx(n.velx), vely(n.vely), accx(n.accx), accy(n.accy) {}
 
-	static newtonian parse(std::istream &in) {return newtonian();}
+	static newtonian parse(std::istream &in);
 	virtual void step();
 	virtual std::unique_ptr<ai> clone(entity *e) const {return std::unique_ptr<ai>(new newtonian(*this, e));}
 	virtual ~newtonian() {}

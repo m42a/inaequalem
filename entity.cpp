@@ -12,3 +12,7 @@ void entity::draw() const
 	models[m].drawwireframe();
 	glPopMatrix();
 }
+
+entity::~entity()
+{
+}

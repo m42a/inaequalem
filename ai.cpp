@@ -2,6 +2,9 @@
 
 #include "ai.h"
 #include "entity.h"
+#include "parse.h"
+
+using namespace std;
 
 void ai::takedamage(damage type, float dam)
 {
@@ -11,6 +14,15 @@ void ai::takedamage(damage type, float dam)
 		body->health-=dam;
 	if (body->health<=0)
 		body->destroy();
+}
+
+newtonian newtonian::parse(istream &in)
+{
+	float velx=::parse<float>(in);
+	float vely=::parse<float>(in);
+	float accx=::parse<float>(in);
+	float accy=::parse<float>(in);
+	return newtonian(velx, vely, accx, accy);
 }
 
 void newtonian::step()

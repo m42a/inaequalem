@@ -42,6 +42,8 @@ struct entity
 	std::unique_ptr<ai> pai;
 	std::string m;
 	float health;
+
+	~entity();
 };
 
 #endif

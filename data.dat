@@ -52,6 +52,12 @@ most recent definition is used.  The model named player is used for the player.
 
 ==========
 
+Each enemy or bullet consists of a model id, followed an x and y position, a
+level, a health value, and an ai. This is followed by a list of integers
+indicating on which ticks the entity should spawn.
+
+==========
+
 You can comment this file by placing text anywhere outside definitions;
 comments are not allowed inside definitions.
 
@@ -102,3 +108,8 @@ The model for the player's bullet
 		vertex 0 0 0
 --
 
+-- enemy player
+	.5 .5 0 2
+	newtonian 0 0 0 0
+	300
+--
