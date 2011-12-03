@@ -36,8 +36,7 @@ void player::draw() const
 {
 	glPushMatrix();
 	glTranslatef(x,y,levelheight[level]);
-	models[m].drawsolid();
-	models[m].drawwireframe();
+	models[m].draw();
 	glPopMatrix();
 }
 
