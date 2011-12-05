@@ -7,10 +7,12 @@ Coding stuff:
 	Add force-field-like visual effect
 	Add clipping
 	Add fog
+	Add collision detection
+	Make entities deal damage
+	Add a win condition (optional)
 
 Spec stuff:
 	Add entities to the spec
 
 Design stuff:
 	Design actual levels
-	Add background
