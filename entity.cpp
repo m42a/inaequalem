@@ -12,6 +12,7 @@ void entity::draw() const
 	glPopMatrix();
 }
 
+//This destructor is implicitly huge, so don't inline it.
 entity::~entity()
 {
 }

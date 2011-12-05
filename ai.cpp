@@ -8,6 +8,10 @@ using namespace std;
 
 void ai::takedamage(damage type, float dam)
 {
+	if (!body)
+		return;
+	//Take minimal damage from things that would normally deal no damage;
+	//this lets us destroy bullets easily
 	if (type==damage::none && dam!=0)
 		body->health-=FLT_MIN;
 	else
@@ -27,12 +31,13 @@ newtonian newtonian::parse(istream &in)
 
 void newtonian::step()
 {
-	//if (!body)
-	//	return;
+	if (!body)
+		return;
 	velx+=accx;
 	vely+=accy;
 	body->x+=velx;
 	body->y+=vely;
+	//Crush all the enemies that leave the arena
 	if (body->y<-.1 || body->y>1.1 || body->x<-.1 || body->x>1.1)
 		body->destroy();
 }
