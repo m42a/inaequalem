@@ -5,36 +5,39 @@ using namespace std;
 
 class camera
 {
-	public:
-		camera();	
-		static constexpr float xzoom = 0.1;
-		static constexpr float zoomin = 0.1;
-		void incrementviewdirection();
-		void decrementviewdirection();
-		//void zoomall();
-		void incrementzoomdistance() { zoomdistance += xzoom;} 
-		void decrementzoomdistance();
-		float getviewdirection() const{return viewdirection;}
-		float getzoomdistance() const{return zoomdistance;}
-	private:
-		float viewdirection;
-		float zoomdistance;
+public:
+	camera();
+	static constexpr float xzoom = 0.1;
+	static constexpr float zoomin = 0.1;
+	void incrementviewdirection();
+	void decrementviewdirection();
+	//void zoomall();
+	void incrementzoomdistance() { zoomdistance += xzoom;}
+	void decrementzoomdistance();
+	float getviewdirection() const {return viewdirection;}
+	float getzoomdistance() const {return zoomdistance;}
+private:
+	float viewdirection;
+	float zoomdistance;
 };
-camera::camera()
+camera::camera() : viewdirection(0), zoomdistance(0.001)
 {
-	viewdirection =0.0;
-	zoomdistance = 0.001; //stock values, might need changing.
+	/*viewdirection = 0.0;
+	zoomdistance = 0.001; //stock values, might need changing.*/
 }
 
 void camera::decrementzoomdistance()
-{	
-	if((zoomdistance-xzoom) >= 0.0)
+{
+	zoomdistance-=xzoom;
+	if (zoomdistance<0)
+		zoomdistance=0;
+	/*if((zoomdistance-xzoom) >= 0.0)
 	{
 		zoomdistance -= xzoom;
 		return;
 	}
 	zoomdistance = 0.0;
-	return;
+	return;*/
 }
 
 void camera::incrementviewdirection()
