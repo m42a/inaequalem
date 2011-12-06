@@ -1,0 +1,17 @@
+Coding stuff:
+	Add 3D view
+	Add keybinds for rotating/zooming the view
+	Add the playing field boundary
+	Make the camera follow the player
+	Put views side-by-side
+	Add force-field-like visual effect
+	Add clipping
+	Add fog
+
+Spec stuff:
+	Add entities to the spec
+	Parse entities
+
+Design stuff:
+	Design actual levels
+	Add background
