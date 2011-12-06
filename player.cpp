@@ -11,7 +11,7 @@ const unique_ptr<ai> bulletai(new newtonian(0, .02, 0, 0));
 void player::step(int tick)
 {
 	if (tick%4==0)
-		spawnbullet(x, y, bulletai, "bullet");
+		spawnbullet({x, y, bulletai, "bullet", FLT_MIN, level});
 }
 
 void player::moveto(float xx, float yy)

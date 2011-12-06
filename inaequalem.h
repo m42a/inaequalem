@@ -41,11 +41,11 @@ inline T bound(const T &v, const T &l, const T &r)
 	return v;
 }
 
-inline entity &spawnenemy(float x, float y, const std::unique_ptr<ai> &a, const std::string m="", float h=1)
+/*inline entity &spawnenemy(float x, float y, const std::unique_ptr<ai> &a, const std::string m="", float h=1)
 {
 	e.emplace_back(x,y,a,m,h);
 	return e.back();
-}
+}*/
 
 inline entity &spawnenemy(const entity &ee)
 {
@@ -53,11 +53,12 @@ inline entity &spawnenemy(const entity &ee)
 	return e.back();
 }
 
-inline entity &spawnbullet(float x, float y, const std::unique_ptr<ai> &a, const std::string m="", float h=FLT_MIN)
+/*inline entity &spawnbullet(float x, float y, const std::unique_ptr<ai> &a, const std::string m="", float h=FLT_MIN)
 {
 	pb.emplace_back(x,y,a,m,h);
 	return pb.back();
-}
+}*/
+
 inline entity &spawnbullet(const entity &ee)
 {
 	pb.push_back(ee);
