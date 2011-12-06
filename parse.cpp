@@ -1,7 +1,8 @@
 #include <fstream>
 #include <string>
 #include <unordered_map>
-
+#include <vector>
+#include <stdexcept>
 #include <cstdlib>
 #include <iostream>
 
@@ -53,11 +54,14 @@ inline void addvertex(string name, const vertex &v)
 string parsestring(istream &in)
 {
 	char c;
+	if (in.eof())
+		throw string("Error: unexpected end of file.");
 	//Discard whitespace
 	while (in.get(c) && isspace(c))
 		;
 	if (in.eof())
-		throw string("Error: unexpected end of file.");
+		//We just reached the end of the file, so return an empty string
+		return "";
 	if (in.fail())
 		throw string("An unexpected error occured while reading from the file.");
 	string val;
@@ -242,6 +246,82 @@ void parsedefine(istream &in)
 		throw string("Error: unexpected end of \"define\" directive");
 }
 
+model parseobj(istream &in)
+{
+	vector<vertex> verts;
+	//Insert dummy element since obj files are 1-indexed by vectors are
+	//0-indexed.
+	verts.emplace_back(0,0,0);
+	model m;
+	string type;
+	color c=color::nocolor();
+	try
+	{
+		while (type=parsestring(in),in)
+		{
+			if (type=="v")
+			{
+				float f0=parse<float>(in);
+				float f1=parse<float>(in);
+				float f2=parse<float>(in);
+				verts.emplace_back(f0,f1,f2);
+			}
+			else if (type=="f")
+			{
+				int i0=parse<int>(in);
+				int i1=parse<int>(in);
+				int i2=parse<int>(in);
+				coloredvertex v=verts.at(i0);
+				if (c!=color::nocolor())
+				{
+					v.c=c;
+					c=color::nocolor();
+				}
+				m.addtriangle({v,verts.at(i1),verts.at(i2)});
+			}
+			else if (type=="c")
+			{
+				float f0=parse<float>(in);
+				float f1=parse<float>(in);
+				float f2=parse<float>(in);
+				c={f0,f1,f2};
+			}
+			else
+				throw "Unexpected type \""+type+"\"";
+		}
+	}
+	catch (out_of_range &o)
+	{
+		throw string("Invalid vertex index: ")+o.what();
+	}
+	return m;
+}
+
+void parseobjs(istream &in)
+{
+	string name, fname;
+	//in comes after the assignement since it modifies in
+	while ((name=parsestring(in))!="--" && (fname=parsestring(in))!="--" && in)
+	{
+		ifstream ifs(fname);
+		if (!ifs.is_open())
+			throw "Error: Couldn't open obj file \""+fname+"\"";
+		try
+		{
+			model m=parseobj(ifs);
+			models[name]=m;
+			cout << "Added model " << name << endl;
+		}
+		catch (string s)
+		{
+			throw "   In obj file \""+fname+"\":\n"+s;
+		}
+	}
+	//An error occured before the section ended
+	if (name!="--")
+		throw string("Error: unexpected end of \"includeobj\" directive");
+}
+
 void parseinclude(istream &in)
 {
 	string fname;
@@ -280,6 +360,8 @@ void parse(const string &fname)
 		tmp=parsestring(ifs);
 		if (tmp=="include")
 			parseinclude(ifs);
+		else if (tmp=="includeobj")
+			parseobjs(ifs);
 		else if (tmp=="define")
 			parsedefine(ifs);
 		else if (tmp=="model")

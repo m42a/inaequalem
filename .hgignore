@@ -1,7 +1,9 @@
 syntax: glob
+# Everything removed by make clean should be in here
 # Ignore vim's temporary backup files
 *~
 *.d
 *.o
+*.filtobj
 inaequalem
 inaequalem.exe

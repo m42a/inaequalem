@@ -9,7 +9,7 @@ struct color
 	float p[4];
 
 	//Default to no color
-	color() : p(nocolor()) {}
+	color() : p({0,0,0,-1}) {}
 	color(float r, float g, float b, float a=1) : p({r,g,b,a}) {}
 	//Convert to pointer implicitly
 	operator float*() {return p;}

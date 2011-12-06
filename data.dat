@@ -23,8 +23,8 @@ vertices.  Each vertex may optionally be preceded by a color.
 ==========
 
 Every definition is identified by a double-hyphen, followed by an identifier.
-Accepted identifiers are include, define, model, bullet, and enemy. Every
-definition ends with a double-hyphen.
+Accepted identifiers are include, includeobj, define, model, bullet, and enemy.
+Every definition ends with a double-hyphen.
 
 ==========
 
@@ -34,6 +34,11 @@ definition.  Files should be specified with either absolute paths or paths
 relative to the program's working directory, not to the parent file's
 directory.  Included files may include other files recursively.  Please try not
 to include yourself, the parser isn't smart enough to break the resulting loop.
+
+==========
+
+Includeobj creates models from filtered obj files.  It takes a list of
+modelnames paired with filenames.
 
 ==========
 
@@ -108,8 +113,10 @@ The model for the player's bullet
 		vertex 0 0 0
 --
 
--- enemy player
+-- includeobj asteroid asteroid.filtobj --
+
+-- enemy asteroid
 	.5 .5 0 2
 	newtonian 0 0 0 0
-	300
+	0
 --
