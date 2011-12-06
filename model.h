@@ -23,6 +23,7 @@ struct model
 
 	void drawsolid() const {glPolygonMode(GL_FRONT_AND_BACK, GL_FILL); drawtriangles();}
 	void drawwireframe() const {glPolygonMode(GL_FRONT_AND_BACK, GL_LINE); drawtriangles();}
+	void draw() const {drawsolid(); drawwireframe();}
 };
 
 extern std::unordered_map<std::string, model> models;

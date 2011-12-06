@@ -6,8 +6,6 @@
 
 using namespace std;
 
-const float SQRT_3=1.73205080756887729;
-
 const unique_ptr<ai> bulletai(new newtonian(0, .02, 0, 0));
 
 void player::step(int tick)
@@ -36,8 +34,7 @@ void player::draw() const
 {
 	glPushMatrix();
 	glTranslatef(x,y,levelheight[level]);
-	models[m].drawsolid();
-	models[m].drawwireframe();
+	models[m].draw();
 	glPopMatrix();
 }
 

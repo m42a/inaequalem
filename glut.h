@@ -11,7 +11,8 @@
 #  include <GL/glut.h>
 #endif
 
-#if __GNUC__ < 4 || (__GNUC__ == 4 && __GNUC_MINOR__ < 6) //gcc added nullptr support in 4.6
+//gcc added nullptr support in 4.6
+#if __GNUC__ < 4 || (__GNUC__ == 4 && __GNUC_MINOR__ < 6)
 #   define nullptr NULL
 #endif
 
@@ -34,6 +35,8 @@ namespace direction
 	const float downright=7*M_TAU/8;
 };
 
+//The height of each level; this should be strictly increasing unless you want
+//to confuse people
 const float levelheight[]={.2,.8};
 
 #endif

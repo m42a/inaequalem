@@ -2,6 +2,7 @@
 #include <string>
 #include <unordered_map>
 
+#include <cstdlib>
 #include <iostream>
 
 #include "parse.h"
@@ -9,6 +10,9 @@
 #include "triangle.h"
 #include "vertex.h"
 #include "color.h"
+#include "ai.h"
+#include "entity.h"
+#include "inaequalem.h"
 
 using namespace std;
 
@@ -89,19 +93,18 @@ string parsestring(istream &in)
 
 vertex parsevertex(istream &in)
 {
-	float f1, f2, f3;
-	in >> f1 >> f2 >> f3;
-	if (!in)
-		throw string("Error parsing vertex.");
+	float f1=parse<float>(in);
+	float f2=parse<float>(in);
+	float f3=parse<float>(in);
 	return {f1,f2,f3};
 }
 
 color parsecolor(istream &in)
 {
-	float f1, f2, f3, f4;
-	in >> f1 >> f2 >> f3 >> f4;
-	if (!in)
-		throw string("Error parsing color.");
+	float f1=parse<float>(in);
+	float f2=parse<float>(in);
+	float f3=parse<float>(in);
+	float f4=parse<float>(in);
 	return {f1,f2,f3,f4};
 }
 
@@ -142,14 +145,43 @@ void donothing(istream &in)
 		;
 }
 
+ai parseai(istream &in)
+{
+	string name=parsestring(in);
+	if(name=="newtonian")
+		return newtonian::parse(in);
+	else
+		throw "Unrecognized ai \""+name+'"';
+}
+
+entity parseentity(istream &in)
+{
+	string model=parsestring(in);
+	float x=parse<float>(in);
+	float y=parse<float>(in);
+	int l=parse<int>(in);
+	float h=parse<float>(in);
+	return entity(x, y, unique_ptr<ai>(new ai(parseai(in))), model, h, l);
+}
+
 void parsebullet(istream &in)
 {
-	donothing(in);
+	entity e=parseentity(in);
+	string tick;
+	while ((tick=parsestring(in))!="--" && in)
+		addbullet(atoi(tick.c_str()), e);
+	if (tick!="--")
+		throw string("Error: unexpected end of \"bullet\" directive");
 }
 
 void parseenemy(istream &in)
 {
-	donothing(in);
+	entity e=parseentity(in);
+	string tick;
+	while ((tick=parsestring(in))!="--" && in)
+		addenemy(atoi(tick.c_str()), e);
+	if (tick!="--")
+		throw string("Error: unexpected end of \"enemy\" directive");
 }
 
 void parsemodel(istream &in)

@@ -8,8 +8,10 @@ struct color
 {
 	float p[4];
 
-	color() = default;
+	//Default to no color
+	color() : p(nocolor()) {}
 	color(float r, float g, float b, float a=1) : p({r,g,b,a}) {}
+	//Convert to pointer implicitly
 	operator float*() {return p;}
 	operator const float*() const {return p;}
 
