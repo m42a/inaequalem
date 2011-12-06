@@ -99,10 +99,10 @@ void positionCamera()
 {
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
-	glFrustum(-5, -5, 5, 5, 1, 5);
+	gluPerspective(90, ratio, .1, 5);
 	glMatrixMode(GL_MODELVIEW);
 	//place camera
-	gluLookAt(0.5, my_camera.getzoomdistance()*-sin(my_camera.getviewdirection())+0.5, my_camera.getzoomdistance()*cos(my_camera.getviewdirection())+0.5, 0.5, 0.5, 0.5, 0.0, cos(my_camera.getviewdirection()), sin(my_camera.getviewdirection()));
+	my_camera.lookat(p.x, p.y, levelheight[p.level]);
 
 	//gluLookAt(0.5, 0.5, 1.0, 0.5, 0.5, 0.5, 0.0, 1.0, 0.0);
 }
