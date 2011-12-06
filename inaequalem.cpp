@@ -26,6 +26,11 @@ int movedir=0;
 int ticker=0;
 int background[2];
 
+int widthoffset;
+int heightoffset;
+int stagewidth;
+int sidewidth;
+
 struct timespec then;
 string fps; //This is the string to display as an FPS counter, do not rely on it being parsable
 
@@ -90,9 +95,12 @@ void drawBackground()
 
 	glDisable(GL_TEXTURE_2D);
 }
-void drawSceen()
+void positionCamera()
 {
-	my_camera = camera();
+	glMatrixMode(GL_PROJECTION);
+	glLoadIdentity();
+	glFrustum(-5, -5, 5, 5, 1, 5);
+	glMatrixMode(GL_MODELVIEW);
 	//place camera
 	gluLookAt(0.5, my_camera.getzoomdistance()*-sin(my_camera.getviewdirection())+0.5, my_camera.getzoomdistance()*cos(my_camera.getviewdirection())+0.5, 0.5, 0.5, 0.5, 0.0, cos(my_camera.getviewdirection()), sin(my_camera.getviewdirection()));
 
@@ -106,7 +114,6 @@ void drawSidepanel()
 	//Dark gray background
 	glRectf(1,0,ratio,1);
 	glColor3f(1.0, 1.0, 1.0);
-	//Text in white
 	writetext(1.02, .9, .04, "Score: &e0");
 	//Debugging output, remove in release
 	writetext(1.02, .5, .02, strprintf("Health: %g", p.health));
@@ -118,15 +125,35 @@ void drawSidepanel()
 void render()
 {
 	glClear(GL_COLOR_BUFFER_BIT);
-	drawBackground();
-	//MEGAN'S FUNCTION HERE (SOURCE OF ERROR LIKELY)
+
+	//A square viewport on the left side of the window
+	glViewport(widthoffset, heightoffset, stagewidth, stagewidth);
+
+	//Blank out unused portions of the screen
+	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
-	drawSceen();
+	gluOrtho2D(0, 1, 0, 1);
+	glMatrixMode(GL_MODELVIEW);
+	glLoadIdentity();
+	glColor3f(0,0,0);
+	glRectf(0,0,1,1);
+
+	positionCamera();
+	//Draw the scene
+	drawBackground();
 	p.draw();
 	for_each(e.cbegin(), e.cend(), mem_fun_ref(&entity::draw));
 	for_each(pb.cbegin(), pb.cend(), mem_fun_ref(&entity::draw));
-	//Draw the side panel over everything else, since we don't do scissoring
+
+	//The sidepanel's viewport
+	glViewport(widthoffset+stagewidth, heightoffset, sidewidth, stagewidth);
+	glMatrixMode(GL_PROJECTION);
+	glLoadIdentity();
+	gluOrtho2D(1, ratio, 0, 1);
+	glMatrixMode(GL_MODELVIEW);
+	glLoadIdentity();
 	drawSidepanel();
+
 	glutSwapBuffers();
 }
 
@@ -134,17 +161,23 @@ void resize(int w, int h)
 {
 	if (w==0 || h==0)
 		return;
+	int viewh, vieww;
 	//Ensure the relative dimensions of the playing area are unstretched
 	if (ratio*h>w)
-		glViewport(0, (h-w/ratio)/2, w, w/ratio);
+	{
+		vieww=w;
+		viewh=w/ratio;
+	}
 	else
-		glViewport((w-h*ratio)/2, 0, h*ratio, h);
-	glMatrixMode(GL_PROJECTION);
-	glLoadIdentity();
-	//Change this when we have 3D
-	glFrustum(-5, -5, 5, 5, 1, 5);
-	glMatrixMode(GL_MODELVIEW);
-	glLoadIdentity();
+	{
+		vieww=h*ratio;
+		viewh=h;
+	}
+	//Center the viewing window
+	widthoffset=(w-vieww)/2;
+	heightoffset=(h-viewh)/2;
+	stagewidth=viewh;
+	sidewidth=vieww-viewh;
 }
 
 void stepandcull(vector<entity> &v)
@@ -198,9 +231,6 @@ void gamelogic(int)
 	spawnbullets(ticker, lb);
 	spawnenemies(ticker, le);
 	++ticker;
-	//Shoot every 4th tick
-	/*if (ticker%4==0 && shooting)
-		pb.emplace_back(p.x, p.y, 0, direction::up, .02);*/
 	//This tracks ticks, not displayed frames (but it'll always be the
 	//correct unless we take more than 16 milliseconds per tick)
 	if (ticker%32==0)
@@ -209,13 +239,6 @@ void gamelogic(int)
 		clock_gettime(CLOCK_MONOTONIC, &now);
 		double diff=(now.tv_sec-then.tv_sec)+(now.tv_nsec-then.tv_nsec)/1000000000.0;
 		double frames=32/diff;
-		//This should really be a variadic template function
-		//This is a function, there's no reason not to just call strprintf
-		/*int size=snprintf(NULL, 0, "FPS: %05.2f", frames);
-		char *s=new char[size+1];
-		sprintf(s, "FPS: %05.2f", frames);
-		fps=s;
-		delete[] s;*/
 		fps=strprintf("FPS: %05.2f", frames);
 		then=now; //This happens soon
 	}
@@ -228,14 +251,10 @@ void gamelogic(int)
 //logically impossible.
 void keydown(unsigned char key, int, int)
 {
-	/*if (key=='z')
-		shooting=true;*/
 }
 
 void keyup(unsigned char key, int, int)
 {
-	/*if (key=='z')
-		shooting=false;*/
 }
 
 void specialdown(int key, int, int)
@@ -291,12 +310,10 @@ int main(int argc, char *argv[])
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glEnable(GL_LINE_SMOOTH);
 	glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
-	//This doesn't even work, but it's okay, we have a stupid workaround
-	/*glEnable(GL_POLYGON_SMOOTH);
-	glHint(GL_POLYGON_SMOOTH_HINT, GL_NICEST);*/
 
 	background[0]=loadRGBtexture("background.dat", 512, 2048);
 	background[1]=loadRGBAtexture("foreground.dat", 512, 2048);
+
 	glutDisplayFunc(render);
 	glutReshapeFunc(resize);
 	glutTimerFunc(15, gamelogic, 0);

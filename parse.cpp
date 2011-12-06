@@ -310,7 +310,6 @@ void parseobjs(istream &in)
 		{
 			model m=parseobj(ifs);
 			models[name]=m;
-			cout << "Added model " << name << endl;
 		}
 		catch (string s)
 		{
