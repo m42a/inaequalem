@@ -11,13 +11,14 @@
 #include "entity.h"
 #include "player.h"
 #include "parse.h"
+#include "camera.h"
 
 using namespace std;
 
 const float ratio=640.0/480.0; //The desired width/height ratio
 const float textheight=119.05; //From the documentation
 const float textlineheight=119.05+33.33; //From the documentation
-
+camera my_camera;
 // These should be part of the player class
 int movedir=0;
 //bool shooting;
@@ -55,6 +56,14 @@ void drawBackground()
 	glColor3f(0.0, 0.0, 0.0);
 	glRectf(0,0,1,1);
 }
+void drawSceen()
+{
+	my_camera = camera();
+	//place camera
+	gluLookAt(0.5, my_camera.getzoomdistance()*-sin(my_camera.getviewdirection())+0.5, my_camera.getzoomdistance()*cos(my_camera.getviewdirection())+0.5, 0.5, 0.5, 0.5, 0.0, cos(my_camera.getviewdirection()), sin(my_camera.getviewdirection()));
+
+	//gluLookAt(0.5, 0.5, 1.0, 0.5, 0.5, 0.5, 0.0, 1.0, 0.0);
+}
 
 void drawSidepanel()
 {
@@ -76,6 +85,9 @@ void render()
 {
 	glClear(GL_COLOR_BUFFER_BIT);
 	drawBackground();
+	//MEGAN'S FUNCTION HERE (SOURCE OF ERROR LIKELY)
+	glLoadIdentity();
+	drawSceen();
 	p.draw();
 	for_each(e.cbegin(), e.cend(), mem_fun_ref(&entity::draw));
 	for_each(pb.cbegin(), pb.cend(), mem_fun_ref(&entity::draw));
@@ -96,8 +108,9 @@ void resize(int w, int h)
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
 	//Change this when we have 3D
-	gluOrtho2D(0,ratio,0,1);
+	glFrustum(-5, -5, 5, 5, 1, 5);
 	glMatrixMode(GL_MODELVIEW);
+	glLoadIdentity();
 }
 
 void stepandcull(vector<entity> &v)
