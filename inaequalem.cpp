@@ -154,10 +154,17 @@ void stepandcull(vector<entity> &v)
 	v.erase(i, v.end());
 }
 
-void spawnentities(int tick, unordered_multimap<int, entity> &e)
+void spawnbullets(int tick, unordered_multimap<int, entity> &e)
 {
 	auto ents=e.equal_range(tick);
 	for_each(ents.first, ents.second, [](const pair<int, entity> &p){spawnbullet(p.second);});
+	e.erase(ents.first, ents.second);
+}
+
+void spawnenemies(int tick, unordered_multimap<int, entity> &e)
+{
+	auto ents=e.equal_range(tick);
+	for_each(ents.first, ents.second, [](const pair<int, entity> &p){spawnenemy(p.second);});
 	e.erase(ents.first, ents.second);
 }
 
@@ -188,8 +195,8 @@ void gamelogic(int)
 	//Move the enemies
 	stepandcull(e);
 	p.step(ticker);
-	spawnentities(ticker, lb);
-	spawnentities(ticker, le);
+	spawnbullets(ticker, lb);
+	spawnenemies(ticker, le);
 	++ticker;
 	//Shoot every 4th tick
 	/*if (ticker%4==0 && shooting)
