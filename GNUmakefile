@@ -17,7 +17,7 @@ endif
 # I don't even know why I did this, this Makefile only works with GNU make anyway
 CPP:=g++
 
-OBJECTS:=inaequalem.o entity.o player.o model.o parse.o ai.o
+OBJECTS:=inaequalem.o entity.o player.o model.o parse.o ai.o texture.o
 DEPENDS:=$(OBJECTS:%.o=%.d)
 
 .PHONY: clean run

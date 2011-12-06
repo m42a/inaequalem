@@ -12,6 +12,7 @@
 #include "player.h"
 #include "parse.h"
 #include "camera.h"
+#include "texture.h"
 
 using namespace std;
 
@@ -23,6 +24,7 @@ camera my_camera;
 int movedir=0;
 //bool shooting;
 int ticker=0;
+int background[2];
 
 struct timespec then;
 string fps; //This is the string to display as an FPS counter, do not rely on it being parsable
@@ -53,8 +55,40 @@ void writetext(float x, float y, float size, const string &s)
 void drawBackground()
 {
 	//Do something cool with stars
-	glColor3f(0.0, 0.0, 0.0);
-	glRectf(0,0,1,1);
+	glColor3f(1,1,1);
+	glEnable(GL_TEXTURE_2D);
+	//int background=loadRGBtexture("background.dat", 512, 2048);
+	glBindTexture(GL_TEXTURE_2D, background[0]);
+
+
+	glBegin(GL_QUADS);
+	{
+		glTexCoord2f(0, ticker/1200.0);
+		glVertex3f(0,0,0);
+		glTexCoord2f(1, ticker/1200.0);
+		glVertex3f(1,0,0);
+		glTexCoord2f(1, .25+ticker/1200.0);
+		glVertex3f(1,1,0);
+		glTexCoord2f(0, .25+ticker/1200.0);
+		glVertex3f(0,1,0);
+	}
+	glEnd();
+
+	glBindTexture(GL_TEXTURE_2D, background[1]);
+	glBegin(GL_QUADS);
+	{
+		glTexCoord2f(0, ticker/1000.0);
+		glVertex3f(0,0,0);
+		glTexCoord2f(1, ticker/1000.0);
+		glVertex3f(1,0,0);
+		glTexCoord2f(1, .25+ticker/1000.0);
+		glVertex3f(1,1,0);
+		glTexCoord2f(0, .25+ticker/1000.0);
+		glVertex3f(0,1,0);
+	}
+	glEnd();
+
+	glDisable(GL_TEXTURE_2D);
 }
 void drawSceen()
 {
@@ -254,6 +288,8 @@ int main(int argc, char *argv[])
 	/*glEnable(GL_POLYGON_SMOOTH);
 	glHint(GL_POLYGON_SMOOTH_HINT, GL_NICEST);*/
 
+	background[0]=loadRGBtexture("background.dat", 512, 2048);
+	background[1]=loadRGBAtexture("foreground.dat", 512, 2048);
 	glutDisplayFunc(render);
 	glutReshapeFunc(resize);
 	glutTimerFunc(15, gamelogic, 0);

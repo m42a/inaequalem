@@ -8,7 +8,11 @@ void entity::draw() const
 {
 	glPushMatrix();
 	glTranslatef(x,y,levelheight[level]);
-	models[m].drawsolid();
-	models[m].drawwireframe();
+	models[m].draw();
 	glPopMatrix();
+}
+
+//This destructor is implicitly huge, so don't inline it.
+entity::~entity()
+{
 }

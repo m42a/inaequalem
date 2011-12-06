@@ -64,7 +64,6 @@ inline entity &spawnbullet(const entity &ee)
 	return e.back();
 }
 
-
 inline entity &addenemy(const entity &e, int t)
 {
 	return (le.insert({t,e}))->second;
