@@ -1,7 +1,9 @@
-#include<cstdlib>
-#include "glut.h"
-using namespace std;
+#include <cstdlib>
 
+#include "glut.h"
+#include "inaequalem.h"
+
+using namespace std;
 
 class camera
 {
@@ -14,13 +16,14 @@ public:
 	//void zoomall();
 	void incrementzoomdistance() { zoomdistance += xzoom;}
 	void decrementzoomdistance();
+	void lookat(float x, float y, float z);
 	float getviewdirection() const {return viewdirection;}
 	float getzoomdistance() const {return zoomdistance;}
 private:
 	float viewdirection;
 	float zoomdistance;
 };
-camera::camera() : viewdirection(0), zoomdistance(0.001)
+camera::camera() : viewdirection(M_TAU/32), zoomdistance(1.0)
 {
 	/*viewdirection = 0.0;
 	zoomdistance = 0.001; //stock values, might need changing.*/
@@ -31,25 +34,26 @@ void camera::decrementzoomdistance()
 	zoomdistance-=xzoom;
 	if (zoomdistance<0)
 		zoomdistance=0;
-	/*if((zoomdistance-xzoom) >= 0.0)
-	{
-		zoomdistance -= xzoom;
-		return;
-	}
-	zoomdistance = 0.0;
-	return;*/
 }
 
 void camera::incrementviewdirection()
 {
 	viewdirection += zoomin;
-	if (viewdirection > 360.0) //making circles
-		viewdirection -= 360.0;
+	if (viewdirection > M_TAU) //making circles
+		viewdirection -= M_TAU;
 }
 
 void camera::decrementviewdirection()
 {
 	viewdirection -= zoomin;
 	if(viewdirection < 0.0)
-		viewdirection +=360.0;
+		viewdirection +=M_TAU;
+}
+
+void camera::lookat(float x, float y, float z)
+{
+	gluLookAt(
+		x, y-getzoomdistance()*sin(getviewdirection()), z+getzoomdistance()*cos(getviewdirection()),
+		x, y, z,
+		0.0, cos(getviewdirection()), sin(getviewdirection()));
 }
