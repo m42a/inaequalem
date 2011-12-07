@@ -65,7 +65,7 @@ void drawBackground()
 	//int background=loadRGBtexture("background.dat", 512, 2048);
 	glBindTexture(GL_TEXTURE_2D, background[0]);
 
-
+	glEnable(GL_CULL_FACE);
 	glBegin(GL_QUADS);
 	{
 		glTexCoord2f(0, ticker/1200.0);
@@ -78,6 +78,7 @@ void drawBackground()
 		glVertex3f(0,1,0);
 	}
 	glEnd();
+	glDisable(GL_CULL_FACE);
 
 	glBindTexture(GL_TEXTURE_2D, background[1]);
 	glBegin(GL_QUADS);
@@ -99,9 +100,11 @@ void positionCamera()
 {
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
-	gluPerspective(90, ratio, .1, 5);
-	glMatrixMode(GL_MODELVIEW);
+	gluPerspective(60, 1, .1, 5);
+	//glFrustum(-.5,.5,-.5,.5,1,2);
 	//place camera
+	glMatrixMode(GL_MODELVIEW);
+	glLoadIdentity();
 	my_camera.lookat(p.x, p.y, levelheight[p.level]);
 
 	//gluLookAt(0.5, 0.5, 1.0, 0.5, 0.5, 0.5, 0.0, 1.0, 0.0);
@@ -122,9 +125,33 @@ void drawSidepanel()
 	writetext(1.02, .02, .03, fps);
 }
 
+void enableClipping()
+{
+	double planes[6][4]={
+		{1, 0, 0, 0},
+		{-1, 0, 0, 1},
+		{0, 1, 0, 0},
+		{0, -1, 0, 1},
+		{0, 0, 1, 0},
+		{0, 0, -1, 1}};
+	//We're guaranteed at least 6 clipping planes
+	for (int i=0; i<6; ++i)
+	{
+		//It is always the case that GL_CLIP_PLANEi==GL_CLIP_PLANE0+i.
+		glClipPlane(GL_CLIP_PLANE0+i, planes[i]);
+		glEnable(GL_CLIP_PLANE0+i);
+	}
+}
+
+void disableClipping()
+{
+	for (int i=0; i<6; ++i)
+		glDisable(GL_CLIP_PLANE0+i);
+}
+
 void render()
 {
-	glClear(GL_COLOR_BUFFER_BIT);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	//A square viewport on the left side of the window
 	glViewport(widthoffset, heightoffset, stagewidth, stagewidth);
@@ -140,10 +167,17 @@ void render()
 
 	positionCamera();
 	//Draw the scene
-	drawBackground();
+	glEnable(GL_DEPTH_TEST);
+	glDepthFunc(GL_ALWAYS);
 	p.draw();
+	//The player is magic, don't clip them
+	enableClipping();
+	glDepthFunc(GL_LEQUAL);
+	drawBackground();
 	for_each(e.cbegin(), e.cend(), mem_fun_ref(&entity::draw));
 	for_each(pb.cbegin(), pb.cend(), mem_fun_ref(&entity::draw));
+	glDisable(GL_DEPTH_TEST);
+	disableClipping();
 
 	//The sidepanel's viewport
 	glViewport(widthoffset+stagewidth, heightoffset, sidewidth, stagewidth);
@@ -298,7 +332,7 @@ int main(int argc, char *argv[])
 		cout << s << endl;
 		return 2;
 	}
-	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA);
+	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA | GLUT_DEPTH);
 	glutInitWindowSize(640, 480);
 	glutCreateWindow("Inaequalem");
 
