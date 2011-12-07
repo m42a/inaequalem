@@ -9,8 +9,8 @@ class camera
 {
 public:
 	camera();
-	static constexpr float xzoom = 0.1;
-	static constexpr float zoomin = 0.1;
+	static constexpr float xzoom = 0.01;
+	static constexpr float zoomin = 0.01;
 	void incrementviewdirection();
 	void decrementviewdirection();
 	//void zoomall();
