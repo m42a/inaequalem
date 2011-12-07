@@ -59,21 +59,21 @@ void writetext(float x, float y, float size, const string &s)
 
 void drawBackground()
 {
-	//Do something cool with stars
 	glColor3f(1,1,1);
 	glEnable(GL_TEXTURE_2D);
-	//int background=loadRGBtexture("background.dat", 512, 2048);
 	glBindTexture(GL_TEXTURE_2D, background[0]);
 
+	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 	glEnable(GL_CULL_FACE);
+	//Offset the background slightly so it doesn't get clipped
 	glBegin(GL_QUADS);
 	{
 		glTexCoord2f(0, ticker/1200.0);
-		glVertex3f(0,0,0);
+		glVertex3f(0,0,0.0001);
 		glTexCoord2f(1, ticker/1200.0);
-		glVertex3f(1,0,0);
+		glVertex3f(1,0,0.0001);
 		glTexCoord2f(1, .25+ticker/1200.0);
-		glVertex3f(1,1,0);
+		glVertex3f(1,1,0.0001);
 		glTexCoord2f(0, .25+ticker/1200.0);
 		glVertex3f(0,1,0);
 	}
@@ -84,13 +84,13 @@ void drawBackground()
 	glBegin(GL_QUADS);
 	{
 		glTexCoord2f(0, ticker/1000.0);
-		glVertex3f(0,0,0);
+		glVertex3f(0,0,0.0002);
 		glTexCoord2f(1, ticker/1000.0);
-		glVertex3f(1,0,0);
+		glVertex3f(1,0,0.0002);
 		glTexCoord2f(1, .25+ticker/1000.0);
-		glVertex3f(1,1,0);
+		glVertex3f(1,1,0.0002);
 		glTexCoord2f(0, .25+ticker/1000.0);
-		glVertex3f(0,1,0);
+		glVertex3f(0,1,0.0002);
 	}
 	glEnd();
 
@@ -165,19 +165,39 @@ void render()
 	glColor3f(0,0,0);
 	glRectf(0,0,1,1);
 
+	//Resets the projection matrix
 	positionCamera();
 	//Draw the scene
 	glEnable(GL_DEPTH_TEST);
 	glDepthFunc(GL_ALWAYS);
+	//The player is magic, don't clip or depth-test them
 	p.draw();
-	//The player is magic, don't clip them
+	glDepthFunc(GL_LESS);
 	enableClipping();
-	glDepthFunc(GL_LEQUAL);
 	drawBackground();
 	for_each(e.cbegin(), e.cend(), mem_fun_ref(&entity::draw));
 	for_each(pb.cbegin(), pb.cend(), mem_fun_ref(&entity::draw));
-	glDisable(GL_DEPTH_TEST);
 	disableClipping();
+
+	glPushMatrix();
+	glTranslatef(1,0,-distlevelup(p.level));
+	enableClipping();
+	drawBackground();
+	for_each(e.cbegin(), e.cend(), mem_fun_ref(&entity::draw));
+	for_each(pb.cbegin(), pb.cend(), mem_fun_ref(&entity::draw));
+	disableClipping();
+	glPopMatrix();
+
+	glPushMatrix();
+	glTranslatef(-1,0,-distleveldown(p.level));
+	enableClipping();
+	drawBackground();
+	for_each(e.cbegin(), e.cend(), mem_fun_ref(&entity::draw));
+	for_each(pb.cbegin(), pb.cend(), mem_fun_ref(&entity::draw));
+	disableClipping();
+	glPopMatrix();
+
+	glDisable(GL_DEPTH_TEST);
 
 	//The sidepanel's viewport
 	glViewport(widthoffset+stagewidth, heightoffset, sidewidth, stagewidth);

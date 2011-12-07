@@ -85,4 +85,14 @@ inline entity &addbullet(int t, const entity &e)
 	return (lb.insert({t,e}))->second;
 }
 
+inline float distlevelup(int level)
+{
+	return levelheight[(level+1)%ARRAYSIZE(levelheight)]-levelheight[level];
+}
+
+inline float distleveldown(int level)
+{
+	return -distlevelup((level+ARRAYSIZE(levelheight)-1)%ARRAYSIZE(levelheight));
+}
+
 #endif
