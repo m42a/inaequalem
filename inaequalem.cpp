@@ -20,11 +20,11 @@ const float ratio=640.0/480.0; //The desired width/height ratio
 const float textheight=119.05; //From the documentation
 const float textlineheight=119.05+33.33; //From the documentation
 camera my_camera;
-// These should be part of the player class
 int movedir=0;
-//bool shooting;
 int ticker=0;
 int background[2];
+int camerarot=0;
+int camerazoom=0;
 
 int widthoffset;
 int heightoffset;
@@ -395,6 +395,14 @@ void gamelogic(int)
 		p.move(direction::down);
 	else if (movedir==-4)
 		p.move(direction::downright);
+	if (camerarot==1)
+		my_camera.incrementviewdirection();
+	else if (camerarot==-1)
+		my_camera.decrementviewdirection();
+	if (camerazoom==1)
+		my_camera.incrementzoomdistance();
+	else if (camerazoom==-1)
+		my_camera.decrementzoomdistance();
 	//Move the player's bullets
 	stepandcull(pb);
 	//Move the enemies
@@ -423,10 +431,26 @@ void gamelogic(int)
 //logically impossible.
 void keydown(unsigned char key, int, int)
 {
+	if (key == 'q')
+		camerarot-=1;
+	if (key == 'a')
+		camerarot+=1;
+	if (key == 'w')
+		camerazoom-=1;
+	if (key == 's')
+		camerazoom+=1;
 }
 
 void keyup(unsigned char key, int, int)
 {
+	if (key == 'q')
+		camerarot+=1;
+	if (key == 'a')
+		camerarot-=1;
+	if (key == 'w')
+		camerazoom+=1;
+	if (key == 's')
+		camerazoom-=1;
 }
 
 void specialdown(int key, int, int)
