@@ -57,6 +57,51 @@ void writetext(float x, float y, float size, const string &s)
 	glPopMatrix();
 }
 
+void initparams()
+{
+	glClearColor(1,1,1,0);
+
+	//Antialiasing
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	glEnable(GL_LINE_SMOOTH);
+	glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
+
+	//Texture loading
+	background[0]=loadRGBtexture("background.dat", 512, 2048);
+	background[1]=loadRGBAtexture("foreground.dat", 512, 2048);
+
+	float none[]={0,0,0,0};
+	float ambient[]={0,.1,0,1};
+	float diffuse[]={1,1,1,1};
+
+	//Light 0 is for the whole scene, light 1 is for the portals.  They
+	//both come from the player.
+	glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, none);
+	glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, diffuse);
+	glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, diffuse);
+
+	glLightfv(GL_LIGHT0, GL_AMBIENT, ambient);
+	glLightfv(GL_LIGHT0, GL_DIFFUSE, diffuse);
+	glLightfv(GL_LIGHT0, GL_SPECULAR, none);
+	glLightf(GL_LIGHT0, GL_CONSTANT_ATTENUATION, 1.0);
+	glLightf(GL_LIGHT0, GL_LINEAR_ATTENUATION, 1.0);
+	glLightf(GL_LIGHT0, GL_QUADRATIC_ATTENUATION, 1.0);
+	//glEnable(GL_LIGHT0);
+
+	glLightfv(GL_LIGHT1, GL_AMBIENT, ambient);
+	glLightfv(GL_LIGHT1, GL_DIFFUSE, diffuse);
+	glLightfv(GL_LIGHT1, GL_SPECULAR, none);
+	glLightf(GL_LIGHT1, GL_CONSTANT_ATTENUATION, 0.0);
+	glLightf(GL_LIGHT1, GL_LINEAR_ATTENUATION, 0.0);
+	glLightf(GL_LIGHT1, GL_QUADRATIC_ATTENUATION, 10.0);
+	glEnable(GL_LIGHT1);
+
+	glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, ambient);
+
+	glShadeModel(GL_SMOOTH);
+}
+
 void drawBackground()
 {
 	glColor3f(1,1,1);
@@ -100,11 +145,11 @@ void positionCamera()
 {
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
+	//Adjust this by zoom distance
 	gluPerspective(60, 1, .1, 5);
-	//glFrustum(-.5,.5,-.5,.5,1,2);
-	//place camera
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
+	//Look at the player
 	my_camera.lookat(p.x, p.y, levelheight[p.level]);
 
 	//gluLookAt(0.5, 0.5, 1.0, 0.5, 0.5, 0.5, 0.0, 1.0, 0.0);
@@ -125,8 +170,11 @@ void drawSidepanel()
 	writetext(1.02, .02, .03, fps);
 }
 
-void enableClipping()
+inline void enableClipping()
 {
+	//We need to redo this every time because this will change with the
+	//modelview matrix.
+	//Clipping planes are positioned such that if v0*x+v1*y+v2*z+v3<0, that vertex is clipped
 	double planes[6][4]={
 		{1, 0, 0, 0},
 		{-1, 0, 0, 1},
@@ -143,10 +191,34 @@ void enableClipping()
 	}
 }
 
-void disableClipping()
+inline void disableClipping()
 {
 	for (int i=0; i<6; ++i)
 		glDisable(GL_CLIP_PLANE0+i);
+}
+
+inline void enableLighting()
+{
+	float pos[]={p.x,p.y,levelheight[p.level],1};
+	glLightfv(GL_LIGHT0, GL_POSITION, pos);
+	glLightfv(GL_LIGHT1, GL_POSITION, pos);
+	glEnable(GL_LIGHTING);
+}
+
+inline void disableLighting()
+{
+	glDisable(GL_LIGHTING);
+}
+
+void drawback()
+{
+	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+	glPushMatrix();
+	glTranslatef(p.x, -.505+.0075*(1-p.y), levelheight[p.level]);
+	glRotatef(90,1,0,0);
+	glColor4f(0,1,0,7*(.3-p.y)*(.3-p.y));
+	glutSolidSphere(.5, 30, 30);
+	glPopMatrix();
 }
 
 void render()
@@ -177,6 +249,10 @@ void render()
 	drawBackground();
 	for_each(e.cbegin(), e.cend(), mem_fun_ref(&entity::draw));
 	for_each(pb.cbegin(), pb.cend(), mem_fun_ref(&entity::draw));
+
+	drawback();
+	//drawportal();
+
 	disableClipping();
 
 	glPushMatrix();
@@ -359,14 +435,7 @@ int main(int argc, char *argv[])
 	//Something something POSIX
 	clock_gettime(CLOCK_MONOTONIC, &then);
 
-	glClearColor(1,1,1,0);
-	glEnable(GL_BLEND);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	glEnable(GL_LINE_SMOOTH);
-	glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
-
-	background[0]=loadRGBtexture("background.dat", 512, 2048);
-	background[1]=loadRGBAtexture("foreground.dat", 512, 2048);
+	initparams();
 
 	glutDisplayFunc(render);
 	glutReshapeFunc(resize);
