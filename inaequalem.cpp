@@ -164,9 +164,11 @@ void drawSidepanel()
 	glColor3f(1.0, 1.0, 1.0);
 	writetext(1.02, .9, .04, "Score: &e0");
 	//Debugging output, remove in release
-	writetext(1.02, .5, .02, strprintf("Player x: %10g", p.x));
-	writetext(1.02, .5-.02*textlineheight/textheight, .02, strprintf("Player y: %10g",p.y));
+	writetext(1.02, .5, .02, strprintf("Player x: %g", p.x));
+	writetext(1.02, .5-.02*textlineheight/textheight, .02, strprintf("Player y: %g",p.y));
 	writetext(1.02, .5-.04*textlineheight/textheight, .02, strprintf("Level: %d", p.level));
+	float offset=(((0.8*p.x-1.6)*p.x+1.2)*p.x-0.4)*p.x-0.00128;
+	writetext(1.02, .5-.06*textlineheight/textheight, .02, strprintf("Offset: %g", offset));
 	//Debugging output, but everyone loves FPS counters, so it'll probably stay
 	writetext(1.02, .02, .03, fps);
 }
@@ -229,8 +231,11 @@ void drawleftportal(float z)
 {
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 	glPushMatrix();
-	glTranslatef(0, p.y, z);
-	glColor4f(0,0,1,1);
+	//float offset=-.05+(.8*(p.x-.5)*(p.x-.5)*(p.x-.5)*(p.x-.5)-.8/625.0);
+	float offset=(((0.8*p.x-1.6)*p.x+1.2)*p.x-0.4)*p.x-0.00128;
+	float opacity=(4.76*p.x-4.76)*p.x+0.9996;
+	glTranslatef(offset, p.y, z);
+	glColor4f(0,0,1,opacity);
 	glRotatef(90,0,1,0);
 	float height=.5*(.5-p.x)*(.5-p.x);
 	glutSolidTorus(.05,height,10,10);
@@ -241,8 +246,10 @@ void drawrightportal(float z)
 {
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 	glPushMatrix();
-	glTranslatef(1, p.y, z);
-	glColor4f(1,.5,0,1);
+	float offset=(((0.8*p.x-1.6)*p.x+1.2)*p.x-0.4)*p.x-0.00128;
+	glTranslatef(1-offset, p.y, z);
+	float opacity=p.x*(4.76*p.x-4.76)+0.9996;
+	glColor4f(1,.5,0,opacity);
 	glRotatef(90,0,1,0);
 	float height=.5*(.5-p.x)*(.5-p.x);
 	glutSolidTorus(.05,height,10,10);
