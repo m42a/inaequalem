@@ -164,8 +164,9 @@ void drawSidepanel()
 	glColor3f(1.0, 1.0, 1.0);
 	writetext(1.02, .9, .04, "Score: &e0");
 	//Debugging output, remove in release
-	writetext(1.02, .5, .02, strprintf("Health: %g", p.health));
-	writetext(1.02, .5-.02*textlineheight/textheight, .02, strprintf("Level: %d", p.level));
+	writetext(1.02, .5, .02, strprintf("Player x: %10g", p.x));
+	writetext(1.02, .5-.02*textlineheight/textheight, .02, strprintf("Player y: %10g",p.y));
+	writetext(1.02, .5-.04*textlineheight/textheight, .02, strprintf("Level: %d", p.level));
 	//Debugging output, but everyone loves FPS counters, so it'll probably stay
 	writetext(1.02, .02, .03, fps);
 }
@@ -212,12 +213,39 @@ inline void disableLighting()
 
 void drawback()
 {
+	if (p.y<.3)
+	{
+		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+		glPushMatrix();
+		glTranslatef(p.x, -.505+.0075*(1-p.y), levelheight[p.level]);
+		glRotatef(90,1,0,0);
+		glColor4f(0,1,0,7*(.3-p.y)*(.3-p.y));
+		glutSolidSphere(.5, 30, 30);
+		glPopMatrix();
+	}
+}
+
+void drawleftportal(float z)
+{
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 	glPushMatrix();
-	glTranslatef(p.x, -.505+.0075*(1-p.y), levelheight[p.level]);
-	glRotatef(90,1,0,0);
-	glColor4f(0,1,0,7*(.3-p.y)*(.3-p.y));
-	glutSolidSphere(.5, 30, 30);
+	glTranslatef(0, p.y, z);
+	glColor4f(0,0,1,1);
+	glRotatef(90,0,1,0);
+	float height=.5*(.5-p.x)*(.5-p.x);
+	glutSolidTorus(.05,height,10,10);
+	glPopMatrix();
+}
+
+void drawrightportal(float z)
+{
+	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+	glPushMatrix();
+	glTranslatef(1, p.y, z);
+	glColor4f(1,.5,0,1);
+	glRotatef(90,0,1,0);
+	float height=.5*(.5-p.x)*(.5-p.x);
+	glutSolidTorus(.05,height,10,10);
 	glPopMatrix();
 }
 
@@ -249,10 +277,11 @@ void render()
 	drawBackground();
 	for_each(e.cbegin(), e.cend(), mem_fun_ref(&entity::draw));
 	for_each(pb.cbegin(), pb.cend(), mem_fun_ref(&entity::draw));
-
+	if (p.x<.3)
+		drawleftportal(levelheight[p.level]);
+	if (p.x>.7)
+		drawrightportal(levelheight[p.level]);
 	drawback();
-	//drawportal();
-
 	disableClipping();
 
 	glPushMatrix();
@@ -261,6 +290,8 @@ void render()
 	drawBackground();
 	for_each(e.cbegin(), e.cend(), mem_fun_ref(&entity::draw));
 	for_each(pb.cbegin(), pb.cend(), mem_fun_ref(&entity::draw));
+	if (p.x>.7)
+		drawleftportal(levelheight[(p.level+1)%ARRAYSIZE(levelheight)]);
 	disableClipping();
 	glPopMatrix();
 
@@ -270,9 +301,13 @@ void render()
 	drawBackground();
 	for_each(e.cbegin(), e.cend(), mem_fun_ref(&entity::draw));
 	for_each(pb.cbegin(), pb.cend(), mem_fun_ref(&entity::draw));
+	if (p.x<.3)
+		drawrightportal(levelheight[(p.level-1+ARRAYSIZE(levelheight))%ARRAYSIZE(levelheight)]);
 	disableClipping();
 	glPopMatrix();
 
+	glDepthFunc(GL_ALWAYS);
+	//occludesides();
 	glDisable(GL_DEPTH_TEST);
 
 	//The sidepanel's viewport
