@@ -82,12 +82,14 @@ Useful colors
 --
 
 The player model
--- model player
+- model player
 	triangle white
 		vertex 0 .05 0
 		vertex -.0433 -.025 0
 		vertex  .0433 -.025 0
---
+-
+
+-- includeobj player player.filtobj --
 
 The model for the player's bullet
 -- model bullet
@@ -115,8 +117,8 @@ The model for the player's bullet
 
 -- includeobj asteroid asteroid.filtobj --
 
-- enemy asteroid
+-- enemy asteroid
 	.5 .5 0 2
 	newtonian 0 0 0 0
 	0
--
+--

@@ -7,3 +7,5 @@ syntax: glob
 *.filtobj
 inaequalem
 inaequalem.exe
+centerscale
+centerscale.exe
