@@ -23,7 +23,7 @@ private:
 	float viewdirection;
 	float zoomdistance;
 };
-camera::camera() : viewdirection(M_TAU/32), zoomdistance(1.0)
+camera::camera() : viewdirection(M_TAU/5), zoomdistance(1.0)
 {
 	/*viewdirection = 0.0;
 	zoomdistance = 0.001; //stock values, might need changing.*/
