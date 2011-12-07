@@ -19,12 +19,13 @@ CPP:=g++
 
 OBJECTS:=inaequalem.o entity.o player.o model.o parse.o ai.o texture.o
 DEPENDS:=$(OBJECTS:%.o=%.d)
-OBJMODELS:=asteroid.obj
+OBJMODELS:=asteroid.obj enemy1.obj player.obj
+OBJMATS:=$(OBJMODELS:%.obj=%.mtl)
 FILTMODELS:=$(OBJMODELS:%.obj=%.filtobj)
 
 .PHONY: clean run
 
-inaequalem: $(OBJECTS) $(FILTMODELS)
+inaequalem: $(OBJECTS)
 	$(CPP) $(CFLAGS) $(OBJECTS) -o inaequalem $(LFLAGS)
 
 # Do magic dependency magic
@@ -33,11 +34,14 @@ inaequalem: $(OBJECTS) $(FILTMODELS)
 $(OBJECTS): %.o: %.cpp
 	$(CPP) -MMD -MP -c $(CFLAGS) $<
 
-$(FILTMODELS): %.filtobj: %.obj
-	./filter.sh $<
+$(FILTMODELS): %.filtobj: %.obj %.mtl
+	./filter.sh $*.obj $*.mtl $@
+
+centerscale : centerscale.cpp
+	$(CPP) $(CFLAGS) $<
 
 clean:
-	rm -f $(OBJECTS) $(DEPENDS) $(FILTMODELS) inaequalem *~
+	rm -f $(OBJECTS) $(DEPENDS) $(FILTMODELS) inaequalem centerscale *~
 
-run: inaequalem
+run: inaequalem $(FILTMODELS)
 	./inaequalem data.dat
