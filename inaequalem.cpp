@@ -432,9 +432,9 @@ void gamelogic(int)
 void keydown(unsigned char key, int, int)
 {
 	if (key == 'q')
-		camerarot-=1;
-	if (key == 'a')
 		camerarot+=1;
+	if (key == 'a')
+		camerarot-=1;
 	if (key == 'w')
 		camerazoom-=1;
 	if (key == 's')
@@ -444,9 +444,9 @@ void keydown(unsigned char key, int, int)
 void keyup(unsigned char key, int, int)
 {
 	if (key == 'q')
-		camerarot+=1;
-	if (key == 'a')
 		camerarot-=1;
+	if (key == 'a')
+		camerarot+=1;
 	if (key == 'w')
 		camerazoom+=1;
 	if (key == 's')
