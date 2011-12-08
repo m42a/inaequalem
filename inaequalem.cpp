@@ -150,7 +150,7 @@ void positionCamera()
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
 	//Adjust this by zoom distance
-	gluPerspective(60, 1, .1, 5);
+	gluPerspective(60, 1, my_camera.getzoomdistance()/2, my_camera.getzoomdistance()+2);
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
 	//Look at the player
@@ -168,11 +168,11 @@ void drawSidepanel()
 	glColor3f(1.0, 1.0, 1.0);
 	writetext(1.02, .9, .04, "Score: &e0");
 	//Debugging output, remove in release
-	writetext(1.02, .5, .02, strprintf("Player x: %g", p.x));
-	writetext(1.02, .5-.02*textlineheight/textheight, .02, strprintf("Player y: %g",p.y));
-	writetext(1.02, .5-.04*textlineheight/textheight, .02, strprintf("Level: %d", p.level));
+	writetext(1.02, .5, .02, strprintf("Angle: %g", my_camera.getviewdirection()));
+	writetext(1.02, .5-.02*textlineheight/textheight, .02, strprintf("Zoom: %g",my_camera.getzoomdistance()));
+	writetext(1.02, .5-.04*textlineheight/textheight, .02, strprintf("Enemies: %d", e.size()));
 	float offset=(((0.8*p.x-1.6)*p.x+1.2)*p.x-0.4)*p.x-0.00128;
-	writetext(1.02, .5-.06*textlineheight/textheight, .02, strprintf("Offset: %g", offset));
+	//writetext(1.02, .5-.06*textlineheight/textheight, .02, strprintf("Offset: %g", offset));*/
 	//Debugging output, but everyone loves FPS counters, so it'll probably stay
 	writetext(1.02, .02, .03, fps);
 }
