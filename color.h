@@ -15,7 +15,8 @@ struct color
 	operator float*() {return p;}
 	operator const float*() const {return p;}
 
-	void draw() const {if (p[3]!=-1) glColor4fv(p);}
+	//void draw() const {if (p[3]!=-1) glColor4fv(p);}
+	void draw() const {if (p[3]!=-1) {glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, p);}}
 
 	//This is a value that indicates the color should be not changed.  For
 	//drawing an object without any color, set the opacity to 0.
