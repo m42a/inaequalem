@@ -25,7 +25,7 @@ public:
 	//Required functions
 
 	//Parses a new ai; should return the derived type
-	static ai parse(std::istream &) {return ai();}
+	static std::unique_ptr<ai> parse(std::istream &) {return std::unique_ptr<ai>(new ai());}
 	//Called once every frame (roughly)
 	virtual void step() {}
 	//Clones the current ai, but changes the parent entity
@@ -53,7 +53,7 @@ public:
 	newtonian(float vx, float vy, float ax, float ay, entity *e=nullptr) : ai(1,e), velx(vx), vely(vy), accx(ax), accy(ay) {}
 	newtonian(const newtonian &n, entity *e=nullptr) : ai(1,e), velx(n.velx), vely(n.vely), accx(n.accx), accy(n.accy) {}
 
-	static newtonian parse(std::istream &in);
+	static std::unique_ptr<ai> parse(std::istream &in);
 	virtual void step();
 	virtual std::unique_ptr<ai> clone(entity *e) const {return std::unique_ptr<ai>(new newtonian(*this, e));}
 	virtual ~newtonian() {}

@@ -149,7 +149,7 @@ void donothing(istream &in)
 		;
 }
 
-ai parseai(istream &in)
+unique_ptr<ai> parseai(istream &in)
 {
 	string name=parsestring(in);
 	if(name=="newtonian")
@@ -165,7 +165,7 @@ entity parseentity(istream &in)
 	float y=parse<float>(in);
 	int l=parse<int>(in);
 	float h=parse<float>(in);
-	return entity(x, y, unique_ptr<ai>(new ai(parseai(in))), model, h, l);
+	return entity(x, y, parseai(in), model, h, l);
 }
 
 void parsebullet(istream &in)

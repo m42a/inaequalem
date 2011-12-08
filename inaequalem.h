@@ -62,7 +62,7 @@ inline entity &spawnenemy(const entity &ee)
 inline entity &spawnbullet(const entity &ee)
 {
 	pb.push_back(ee);
-	return e.back();
+	return pb.back();
 }
 
 inline entity &addenemy(const entity &e, int t)

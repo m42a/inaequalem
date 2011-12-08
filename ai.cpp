@@ -20,13 +20,13 @@ void ai::takedamage(damage type, float dam)
 		body->destroy();
 }
 
-newtonian newtonian::parse(istream &in)
+unique_ptr<ai> newtonian::parse(istream &in)
 {
 	float velx=::parse<float>(in);
 	float vely=::parse<float>(in);
 	float accx=::parse<float>(in);
 	float accy=::parse<float>(in);
-	return newtonian(velx, vely, accx, accy);
+	return unique_ptr<ai>(new newtonian(velx, vely, accx, accy));
 }
 
 void newtonian::step()

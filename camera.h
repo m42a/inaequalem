@@ -9,12 +9,12 @@ class camera
 {
 public:
 	camera();
-	static constexpr float xzoom = 0.01;
+	static constexpr float xzoom = 1.01;
 	static constexpr float zoomin = 0.01;
 	void incrementviewdirection();
 	void decrementviewdirection();
 	//void zoomall();
-	void incrementzoomdistance() { zoomdistance += xzoom;}
+	void incrementzoomdistance() { zoomdistance *= xzoom;}
 	void decrementzoomdistance();
 	void lookat(float x, float y, float z);
 	float getviewdirection() const {return viewdirection;}
@@ -31,7 +31,7 @@ camera::camera() : viewdirection(M_TAU/5), zoomdistance(1.0)
 
 void camera::decrementzoomdistance()
 {
-	zoomdistance-=xzoom;
+	zoomdistance/=xzoom;
 	if (zoomdistance<0)
 		zoomdistance=0;
 }
