@@ -78,28 +78,32 @@ void initparams()
 	//Light 0 is for the whole scene, light 1 is for the portals.  They
 	//both come from the player.
 	glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, none);
-	glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, diffuse);
 	glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, diffuse);
+	glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, none);
 
-	glLightfv(GL_LIGHT0, GL_AMBIENT, ambient);
+	glLightfv(GL_LIGHT0, GL_AMBIENT, none);
 	glLightfv(GL_LIGHT0, GL_DIFFUSE, diffuse);
 	glLightfv(GL_LIGHT0, GL_SPECULAR, none);
-	glLightf(GL_LIGHT0, GL_CONSTANT_ATTENUATION, 1.0);
+	/*glLightf(GL_LIGHT0, GL_CONSTANT_ATTENUATION, 1.0);
 	glLightf(GL_LIGHT0, GL_LINEAR_ATTENUATION, 1.0);
-	glLightf(GL_LIGHT0, GL_QUADRATIC_ATTENUATION, 1.0);
-	//glEnable(GL_LIGHT0);
+	glLightf(GL_LIGHT0, GL_QUADRATIC_ATTENUATION, 1.0);*/
+	glEnable(GL_LIGHT0);
 
-	glLightfv(GL_LIGHT1, GL_AMBIENT, ambient);
-	glLightfv(GL_LIGHT1, GL_DIFFUSE, diffuse);
-	glLightfv(GL_LIGHT1, GL_SPECULAR, none);
-	glLightf(GL_LIGHT1, GL_CONSTANT_ATTENUATION, 0.0);
+	glLightfv(GL_LIGHT1, GL_AMBIENT, none);
+	glLightfv(GL_LIGHT1, GL_DIFFUSE, none);
+	glLightfv(GL_LIGHT1, GL_SPECULAR, diffuse);
+	/*glLightf(GL_LIGHT1, GL_CONSTANT_ATTENUATION, 0.0);
 	glLightf(GL_LIGHT1, GL_LINEAR_ATTENUATION, 0.0);
-	glLightf(GL_LIGHT1, GL_QUADRATIC_ATTENUATION, 10.0);
-	glEnable(GL_LIGHT1);
+	glLightf(GL_LIGHT1, GL_QUADRATIC_ATTENUATION, 10.0);*/
+	//glEnable(GL_LIGHT1);
 
-	glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, ambient);
+	//glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, ambient);
 
+	int one=1;
 	glShadeModel(GL_SMOOTH);
+	//This means I don't have to track faces, at the cost of lighting taking twice as long
+	glLightModeliv(GL_LIGHT_MODEL_TWO_SIDE, &one);
+	glEnable(GL_NORMALIZE);
 }
 
 void drawBackground()
@@ -202,9 +206,10 @@ inline void disableClipping()
 
 inline void enableLighting()
 {
-	float pos[]={p.x,p.y,levelheight[p.level],1};
-	glLightfv(GL_LIGHT0, GL_POSITION, pos);
-	glLightfv(GL_LIGHT1, GL_POSITION, pos);
+	float eyepos[]={p.x, p.y-my_camera.getzoomdistance()*sin(my_camera.getviewdirection()), levelheight[p.level]+my_camera.getzoomdistance()*cos(my_camera.getviewdirection()),1};
+	float shippos[]={p.x, p.y, levelheight[p.level],};
+	glLightfv(GL_LIGHT0, GL_POSITION, eyepos);
+	glLightfv(GL_LIGHT1, GL_POSITION, shippos);
 	glEnable(GL_LIGHTING);
 }
 
@@ -221,7 +226,7 @@ void drawback()
 		glPushMatrix();
 		glTranslatef(p.x, -.505+.0075*(1-p.y), levelheight[p.level]);
 		glRotatef(90,1,0,0);
-		glColor4f(0,1,0,7*(.3-p.y)*(.3-p.y));
+		color(0,1,0,7*(.3-p.y)*(.3-p.y)).draw();
 		glutSolidSphere(.5, 30, 30);
 		glPopMatrix();
 	}
@@ -235,7 +240,7 @@ void drawleftportal(float z)
 	float offset=(((0.8*p.x-1.6)*p.x+1.2)*p.x-0.4)*p.x-0.00128;
 	float opacity=(4.76*p.x-4.76)*p.x+0.9996;
 	glTranslatef(offset, p.y, z);
-	glColor4f(0,0,1,opacity);
+	color(0,0,1,opacity).draw();
 	glRotatef(90,0,1,0);
 	float height=.5*(.5-p.x)*(.5-p.x);
 	glutSolidTorus(.05,height,10,10);
@@ -249,7 +254,7 @@ void drawrightportal(float z)
 	float offset=(((0.8*p.x-1.6)*p.x+1.2)*p.x-0.4)*p.x-0.00128;
 	glTranslatef(1-offset, p.y, z);
 	float opacity=p.x*(4.76*p.x-4.76)+0.9996;
-	glColor4f(1,.5,0,opacity);
+	color(1,.5,0,opacity).draw();
 	glRotatef(90,0,1,0);
 	float height=.5*(.5-p.x)*(.5-p.x);
 	glutSolidTorus(.05,height,10,10);
@@ -274,12 +279,13 @@ void render()
 
 	//Resets the projection matrix
 	positionCamera();
+	enableLighting();
 	//Draw the scene
 	glEnable(GL_DEPTH_TEST);
-	glDepthFunc(GL_ALWAYS);
-	//The player is magic, don't clip or depth-test them
+	//glDepthFunc(GL_ALWAYS);
+	//The player is magic, don't clip it
 	p.draw();
-	glDepthFunc(GL_LESS);
+	//glDepthFunc(GL_LEQUAL);
 	enableClipping();
 	for_each(e.cbegin(), e.cend(), mem_fun_ref(&entity::draw));
 	for_each(pb.cbegin(), pb.cend(), mem_fun_ref(&entity::draw));
@@ -312,9 +318,8 @@ void render()
 		drawrightportal(levelheight[(p.level-1+ARRAYSIZE(levelheight))%ARRAYSIZE(levelheight)]);
 	disableClipping();
 	glPopMatrix();
+	disableLighting();
 
-	glDepthFunc(GL_ALWAYS);
-	//occludesides();
 	glDisable(GL_DEPTH_TEST);
 
 	//The sidepanel's viewport
