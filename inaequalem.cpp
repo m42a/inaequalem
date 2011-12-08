@@ -243,7 +243,7 @@ void drawleftportal(float z)
 	color(0,0,1,opacity).draw();
 	glRotatef(90,0,1,0);
 	float height=.5*(.5-p.x)*(.5-p.x);
-	glutSolidTorus(.05,height,10,10);
+	glutSolidTorus(.05,height,30,30);
 	glPopMatrix();
 }
 
@@ -257,7 +257,7 @@ void drawrightportal(float z)
 	color(1,.5,0,opacity).draw();
 	glRotatef(90,0,1,0);
 	float height=.5*(.5-p.x)*(.5-p.x);
-	glutSolidTorus(.05,height,10,10);
+	glutSolidTorus(.05,height,30,30);
 	glPopMatrix();
 }
 
