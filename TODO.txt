@@ -1,8 +1,4 @@
 Coding stuff:
-	Add keybinds for rotating/zooming the view
-	Add the playing field boundary
-	Bound the player's model inside the boundary
-	Add force-field-like visual effect
 	Add fog
 	Add collision detection
 	Make entities deal damage

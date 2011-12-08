@@ -16,7 +16,7 @@ void player::step(int tick)
 
 void player::moveto(float xx, float yy)
 {
-	y=bound(yy, 0.0f, 1.0f);
+	y=bound(yy, 0.03f, 0.9f);
 	x=xx;
 	while (x<0)
 	{

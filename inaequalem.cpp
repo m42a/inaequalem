@@ -35,7 +35,7 @@ struct timespec then;
 string fps; //This is the string to display as an FPS counter, do not rely on it being parsable
 
 //This is us and our bullets
-player p(.5, .5);
+player p(.5, .2);
 vector<entity> pb;
 //These are the enemies and their bullets
 vector<entity> e;
@@ -281,9 +281,9 @@ void render()
 	p.draw();
 	glDepthFunc(GL_LESS);
 	enableClipping();
-	drawBackground();
 	for_each(e.cbegin(), e.cend(), mem_fun_ref(&entity::draw));
 	for_each(pb.cbegin(), pb.cend(), mem_fun_ref(&entity::draw));
+	drawBackground();
 	if (p.x<.3)
 		drawleftportal(levelheight[p.level]);
 	if (p.x>.7)
@@ -294,9 +294,9 @@ void render()
 	glPushMatrix();
 	glTranslatef(1,0,-distlevelup(p.level));
 	enableClipping();
-	drawBackground();
 	for_each(e.cbegin(), e.cend(), mem_fun_ref(&entity::draw));
 	for_each(pb.cbegin(), pb.cend(), mem_fun_ref(&entity::draw));
+	drawBackground();
 	if (p.x>.7)
 		drawleftportal(levelheight[(p.level+1)%ARRAYSIZE(levelheight)]);
 	disableClipping();
@@ -305,9 +305,9 @@ void render()
 	glPushMatrix();
 	glTranslatef(-1,0,-distleveldown(p.level));
 	enableClipping();
-	drawBackground();
 	for_each(e.cbegin(), e.cend(), mem_fun_ref(&entity::draw));
 	for_each(pb.cbegin(), pb.cend(), mem_fun_ref(&entity::draw));
+	drawBackground();
 	if (p.x<.3)
 		drawrightportal(levelheight[(p.level-1+ARRAYSIZE(levelheight))%ARRAYSIZE(levelheight)]);
 	disableClipping();
