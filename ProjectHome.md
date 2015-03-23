@@ -1,0 +1,1 @@
+inaequalem is the accusative masculine singular form of unequal in Latin.
